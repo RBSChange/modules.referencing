@@ -1,0 +1,4 @@
+<?php
+class referencing_persistentdocument_websiteinfo extends referencing_persistentdocument_websiteinfobase
+{
+}

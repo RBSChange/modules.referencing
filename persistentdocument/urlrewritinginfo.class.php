@@ -1,0 +1,4 @@
+<?php
+class referencing_persistentdocument_urlrewritinginfo extends referencing_persistentdocument_urlrewritinginfobase
+{
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<behaviour>
+  <event type="select" target="*" actions="viewInformation" />
+  <datasources import="picker" />
+  <columns>
+    <column ref="label" flex="5" primary="true" properties="type block"/>
+  </columns>
+</behaviour>

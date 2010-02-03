@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+  <binding fileName="modules/useractionlogger/persistentdocument/import/useractionlogger_binding.xml"/>
+  <actiondef modulename="referencing" actionname="update.urlrewritinginfo" label="modules.referencing.bo.useractionlogger.update-urlrewritinginfo"/>
+</script>

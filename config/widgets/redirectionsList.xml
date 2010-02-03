@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<behaviour>
+
+	<event type="select contextmenu" target="modules_generic_rootfolder" actions="-createFolder -openOrderChildren createRedirection" />
+
+	<event type="select contextmenu" target="modules_referencing_redirection" actions="delete" />
+	
+	<datasource module="referencing" components="modules_referencing/redirection" order="oldUrl/asc"/>
+
+	<columns>
+		<column ref="oldUrl" flex="1" label="OldUrl" properties="type" />
+		<column ref="newUrl" flex="1" label="NewUrl" />
+	</columns>
+
+</behaviour>

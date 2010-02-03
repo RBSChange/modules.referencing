@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<project name="Change4" default="usage" >
+
+  <!--############################################################################################-->
+  <!--###############################     BEGIN DEFINE SECTION     ###############################-->
+  <!--############################################################################################-->
+
+  <!-- Some properties -->
+  <property file="${project.bindir}" />
+  <property name="frameworkPath" value="framework" />
+  <property name="builderResourcePath" value="${frameworkPath}/builder" />
+  <property name="test.outfile" value="test_log.txt" />
+  <property name="test.outfileXML" value="test_log.xml" />
+  <property name="test.outdir" value="log/test" />
+  <property name="test.reportdir" value="target/report" />
+  <property name="doc.docdir" value="target/doc" />
+  <property name="profile" value="${env}" />
+  <property name="currentModule" value="catalog" />
+  <resolvepath propertyName="phpErrorLogFile" file="log/test/phperror.log"/>
+
+  <!-- Task definitions -->
+  <taskdef classname="framework.phing.LnTask" name="ln" />
+  <taskdef classname="framework.phing.ListLnTask" name="listln" />
+  <taskdef classname="framework.phing.CatTask" name="cat"/>
+  <taskdef classname="framework.phing.ChrootChownTask" name="chrootchown" />
+  <taskdef classname="framework.phing.ChrootChmodTask" name="chrootchmod" />
+  <taskdef classname="framework.phing.ExtCopyTask" name="extcopy" />
+
+  <taskdef classname="modules.referencing.lib.phing.GenerateSitemapFileTask" name="generatesitemapfile"/>
+  <taskdef classname="modules.referencing.lib.phing.GenerateSitemapFilesTask" name="generatesitemapfiles"/>
+
+  <!--#############################################################################################-->
+  <!--###############################     BEGIN PRIVATE SECTION     ###############################-->
+  <!--#############################################################################################-->
+
+  <!-- Default target -->
+  <target name="usage" >
+	<echo>change modules referencing generate-sitemap www.siteweb.com</echo>
+	<echo>change modules referencing generate-sitemaps</echo>
+  </target>
+
+  <!-- Print builder informations -->
+  <target name="info" >
+    <echo>Builder Change4 version ${version} for module ${currentModule}</echo>
+    <echo>Copyright RBS</echo>
+  </target>
+
+  <!-- Target to generate the sitemap.xml file for a website -->
+  <target name="generate-sitemap">
+    <if>
+      <isset property="value3" />
+      <then>
+	    <generatesitemapfile domain="${value3}" />
+	  </then>
+	  <else>
+	    <echo msg="You must specify the domain name." level="error" />
+	    <phingcall target="usage" />
+	  </else>
+	</if>
+  </target>
+
+  <!-- Target to generate the sitemap.xml file for all the websites in the project -->
+  <target name="generate-sitemaps">
+	  <generatesitemapfiles />
+  </target>
+
+</project>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+	<binding fileName="modules/generic/persistentdocument/import/generic_binding.xml" />
+	<binding name="preferences" className="referencing_PreferencesScriptDocumentElement" />
+	<binding name="referencingpreferences" className="referencing_PreferencesScriptDocumentElement" />
+
+	<binding name="sitemap" className="referencing_SitemapScriptDocumentElement" />
+	<binding name="redirection" className="referencing_RedirectionScriptDocumentElement" />
+	<binding name="websiteinfo" className="referencing_WebsiteinfoScriptDocumentElement" />
+
+	<binding name="urlrewritinginfo" className="referencing_UrlrewritinginfoScriptDocumentElement" />
+</script>

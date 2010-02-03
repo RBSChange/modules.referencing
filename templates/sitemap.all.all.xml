@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url tal:repeat="urlInfo urlInfoArray">
+		<loc tal:content="urlInfo/loc"></loc>
+		<lastmod tal:condition="urlInfo/lastmod" tal:content="urlInfo/lastmod"></lastmod>
+		<changefreq tal:condition="urlInfo/changefreq" tal:content="urlInfo/changefreq"></changefreq>
+		<priority tal:condition="urlInfo/priority" tal:content="urlInfo/priority"></priority>
+	</url>
+</urlset>

@@ -1,0 +1,19 @@
+hbox.website-selection{
+	background: #EEE;
+	border-bottom: 1px solid #ccc;
+}
+listitem.excluded{
+	color: red;
+}
+label.panelToggle{
+	margin-top: 3px;
+}
+treechildren::-moz-tree-image(modules_referencing_preferences){
+	list-style-image: url(/icons/small/seo.png) ;
+}
+treechildren::-moz-tree-image(modules_referencing_redirection){
+	list-style-image: url(/icons/small/undo.png) ;
+}
+treechildren::-moz-tree-image(modules_referencing_urlrewritinginfo){
+	list-style-image: url(/icons/small/star_yellow.png) ;
+}

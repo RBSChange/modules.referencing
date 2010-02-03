@@ -1,0 +1,44 @@
+<html>
+<head>
+	<title>Import d'un fichier de redirections</title>
+	<style type="text/css">
+	body, p, input, h1 {
+		font-family: Arial, sans-serif;
+		font-size: 10pt;
+	}
+	h1 {
+		margin: 0;
+		padding: 1em;
+		font-size: 12pt;
+	}
+	p {
+		margin: 0;
+		padding: 1em;
+	}
+	</style>
+</head>
+<body style="margin: 0px">
+	<h1>Import d'un fichier de redirections</h1>
+	<p>Le fichier doit être au format <em>CSV</em> avec les propriétés suivantes :</p>
+	<ul>
+		<li>la 1ere colone contient l'ancienne URL et commence par le caractère /</li>
+		<li>la 2ème colone contient l'URL de destination et commence par http://</li>
+		<li>il n'y a pas d'entête de colonne</li>
+		<li>il n'y a pas de délimiteur de champ (pas de double quote autour des valeurs)</li>
+		<li>le séparateur est le point-virgule ";"</li>
+		<li>Exemple de ligne:<br/>
+			<strong>/anciennepage.html;http://mon.site.fr/nouvellepage.html</strong></li>
+	</ul>
+	<form action="" enctype="multipart/form-data" method="post">
+		<input type="hidden" name="websiteId" tal:attributes="value websiteId" />
+		<p>
+			<label for="file">Fichier de redirections :</label><br />
+			<input type="file" id="file" name="file" size="40" /><br />
+		</p>
+		<p style="text-align: center">
+			<input type="submit" name="submit" value="Valider" />
+			<input type="button" value="Annuler" onclick="window.close()" />
+		</p>
+	</form>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<datasources>
+  <!-- Use it for the form edition -->
+  <!-- <datasource treecomponents="modules_generic/folder" listcomponents="modules_MODULENAME/DOCUMENTNAME,modules_MODULENAME/DOCUMENTNAME2"/> -->
+  <!-- <datasource treecomponents="modules_website/topic" listcomponents="modules_MODULENAME/DOCUMENTNAME,modules_MODULENAME/DOCUMENTNAME2"/> -->
+  
+  <!-- Use it for the website module -->
+  <!-- <datasource name="pagecontent" treecomponents="modules_website/topic" listcomponents="*"/> -->
+</datasources>

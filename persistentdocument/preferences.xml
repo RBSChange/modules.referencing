@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.rbs.fr/schema/change-document/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.rbs.fr/schema/change-document/1.0 http://www.rbschange.fr/static/schema/change-document/1.0.xsd" 
+    model-version="1.0"	icon="seo" publish-on-day-change="false" backoffice-indexable="false" 
+    table-name-oci="m_referencing_doc_pref" has-url="false">
+	<properties>
+		<add name="label" default-value="preferences" />
+		<add name="sitemapAutoGeneration" type="String" from-list="modules_referencing/sitemapautogeneration" 
+			default-value="daily"></add>
+		<add name="sitemapDefaultPriority" type="String" from-list="modules_referencing/sitemappriorities" 
+			default-value="0.5"></add>
+		<add name="sitemapDefaultChangefreq" type="String" from-list="modules_referencing/sitemapchangefreqs" 
+			default-value="monthly"></add>
+	</properties>
+	<form>
+		<property name="label" display="hidden" />
+	</form>
+	<statuses default="PUBLICATED" />
+</document>

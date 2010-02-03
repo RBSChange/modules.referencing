@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<module>
+		<enabled>true</enabled>
+		<visible>true</visible>
+		<icon>seo</icon>
+		<category>admin</category>
+		<usetopic>false</usetopic>
+	</module>
+</config>

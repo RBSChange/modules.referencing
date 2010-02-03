@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.rbs.fr/schema/change-document/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.rbs.fr/schema/change-document/1.0 http://www.rbschange.fr/static/schema/change-document/1.0.xsd" 
+	model-version="1.0" icon="undo" linked-to-root-module="false" has-url="false"
+	publish-on-day-change="false" backoffice-indexable="false" table-name-oci="m_referencing_doc_redirect">
+	<properties>
+		<add name="oldUrl" type="String" min-occurs="1" max-occurs="1">
+			<constraints>matches:^[^ ]{0,254}$</constraints>
+		</add>
+		<add name="newUrl" type="String" min-occurs="1" max-occurs="1">
+			<constraints>matches:^http\://[^ ]{0,243}$</constraints>
+		</add>
+		<add name="website" type="modules_website/website" min-occurs="1" max-occurs="1" tree-node="true" />
+	</properties>
+	<statuses default="ACTIVE" />
+	<form>
+		<property name="label" display="hidden" />
+		<property name="website" display="readonly" control-type="Text" multiple="false" />
+		<property name="oldUrl" size="100" />
+		<property name="newUrl" size="100" />
+	</form>
+</document>

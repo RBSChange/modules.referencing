@@ -1,0 +1,84 @@
+<html>
+<head>
+	<title>${redirectionCount} redirections importées</title>
+	<style type="text/css">
+	body, p, input {
+		font-family: Arial, sans-serif;
+		font-size: 10pt;
+	}
+	
+	h1 {
+		margin: 0;
+		padding: 1em;
+		font-size: 12pt;
+	}
+	
+	h2 {
+		margin: 0;
+		padding: 1em;
+		font-size: 10pt;
+	}
+	
+	blockquote {
+		margin-top: 0px;
+		padding-top: 0px;
+	}
+	
+	div.label {
+		width: 100px;
+		display: inline;
+	}
+	
+	</style>
+	<script type="text/javascript">
+	function closeAndRefresh()
+	{
+		window.close();
+	}
+	
+	</script>
+</head>
+<body>
+	<h1>Résultat de l'importation</h1>
+	<p>
+		<strong>${redirectionCount}</strong> redirections ont été importées.
+	</p>
+	<p style="text-align: center">
+		<input type="button" value="Fermer" onclick="closeAndRefresh()" />
+	</p>
+	
+	<tal:block tal:condition="errorCount">
+		<hr />
+		<h2>Erreurs rencontrées (${errorCount}) :</h2>	
+		<ul>
+			<li tal:repeat="error errorArray">
+				Ligne: ${error/line}, Erreur: <strong>${error/errormsg}</strong>
+				<blockquote>
+				<tal:block tal:condition="error/oldurl"><div class="label">Origine:</div> ${error/oldurl}<br/></tal:block>
+				<tal:block tal:condition="error/newurl"><div class="label">Redirection:</div> ${error/newurl}<br/></tal:block>
+				</blockquote>
+				<br/>
+			</li>
+		</ul>
+	</tal:block>
+	
+	<tal:block tal:condition="warnCount">
+		<hr />
+		<h2>Alertes rencontrées (${warnCount}) :</h2>
+		<ul>
+			<li tal:repeat="warn warnArray">
+				Ligne: ${warn/line} Code erreur: <strong>${warn/errorcode}</strong> - ${warn/errormsg}
+				<blockquote tal:condition="warn/newurl">
+				<div class="label">URL:</div> ${warn/newurl}<br/>
+				</blockquote>
+				<br tal:condition="not: warn/newurl" />
+				<br/>	
+			</li>
+		</ul>
+	</tal:block>
+	
+	<p tal:condition="totalmessage" style="text-align: center">
+		<input type="button" value="Fermer" onclick="closeAndRefresh()" />
+	</p>	
+</body>
+</html>

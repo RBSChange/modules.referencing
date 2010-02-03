@@ -1,0 +1,357 @@
+<hbox flex="1">
+
+	<vbox flex="1">
+
+		<hbox class="website-selection">
+			<label control="modules_referencing_websiteMenulist" change:i18nattr="value &amp;modules.referencing.bo.general.WebsiteLabel;" style="padding-top:3px; font-size: 14pt; font-weight: bold;"></label>
+			<menulist id="modules_referencing_websiteMenulist" anonid="websiteMenulist" oncommand="onWebsiteChanged(this)">
+				<menupopup />
+			</menulist>
+		</hbox>
+	
+		<deck flex="1" orient="vertical" anonid="contentDeck">
+		
+		<!-- 0. Sitemap -->
+			<vbox flex="1">
+				<toolbox>
+					<toolbar>
+						<toolbarbutton anonid="btnToggleViewUrlList" oncommand="toggleViewUrlList()" i18n:attributes="label &amp;modules.referencing.bo.general.HideUrlListSpaced;" change:icon="search/small" />
+						<toolbarbutton anonid="btnExcludeUrl" oncommand="excludeUrl()" i18n:attributes="label &amp;modules.referencing.bo.general.ExcludeUrlSpaced;" change:icon="delete/small"  />
+						<toolbarbutton anonid="btnRefreshUrlList" oncommand="updateUI()" i18n:attributes="label &amp;modules.referencing.bo.general.RefreshSpaced;" change:icon="refresh/small" />
+    					<toolbarspacer flex="1" />
+						<toolbarbutton anonid="btnSaveExcludedUrlList" oncommand="saveExcludedUrlList()" i18n:attributes="label &amp;modules.referencing.bo.general.SaveSpaced;" change:icon="save/small" disabled="true" />
+						<toolbarbutton anonid="btnGenerateSitemapFile" oncommand="generateSitemapFile()" i18n:attributes="label &amp;modules.referencing.bo.general.GenerateSitemapFileSpaced;" change:icon="check/small" />
+    				</toolbar>
+    			</toolbox>
+				<hbox flex="1">
+					<vbox flex="1" width="500px" anonid="urlListContainer">
+						<hbox>
+							<label style="padding-top:3px" control="modules_referencing_modelMenuList" change:i18nattr="value &amp;modules.referencing.bo.general.DocumentsType;" />
+							<menulist anonid="modelMenuList" id="modules_referencing_modelMenuList" oncommand="onModelChanged(this)">
+								<menupopup />
+							</menulist>
+							<label class="text-link panelToggle" onclick="toggleOptionsGrid()" change:i18nattr="value &amp;modules.referencing.bo.general.Options-for-document-type;" />
+							<label class="text-link panelToggle" onclick="toggleUrlOptionsGrid()" change:i18nattr="value &amp;modules.referencing.bo.general.Options-for-selected-URL;" />
+						</hbox>
+						
+						<groupbox anonid="optionsGrid" collapsed="true" orient="horizontal" align="start">
+							<caption change:i18nattr="label &amp;modules.referencing.bo.general.OptionGridCaption;" />
+							<label style="padding-top:3px" control="modules_referencing_sitemap_priority" change:i18nattr="value &amp;modules.referencing.bo.general.Priority;" />
+							<menulist anonid="sitemap_priority" id="modules_referencing_sitemap_priority">
+								<menupopup>
+									<menuitem value="0" label="0" />
+									<menuitem value="0.1" label="0.1" />
+									<menuitem value="0.2" label="0.2" />
+									<menuitem value="0.3" label="0.3" />
+									<menuitem value="0.4" label="0.4" />
+									<menuitem value="0.5" label="0.5" />
+									<menuitem value="0.6" label="0.6" />
+									<menuitem value="0.7" label="0.7" />
+									<menuitem value="0.8" label="0.8" />
+									<menuitem value="0.9" label="0.9" />
+									<menuitem value="1" label="1" />
+								</menupopup>
+							</menulist>
+							<spacer flex="1" />
+							<label style="padding-top:3px" control="modules_referencing_sitemap_changefreq" change:i18nattr="value &amp;modules.referencing.bo.general.ChangeFrequency;" />
+							<menulist anonid="sitemap_changefreq" id="modules_referencing_sitemap_changefreq">
+								<menupopup>
+									<menuitem value="always" label="always" />
+									<menuitem value="hourly" label="hourly" />
+									<menuitem value="daily" label="daily" />
+									<menuitem value="weekly" label="weekly" />
+									<menuitem value="monthly" label="monthly" />
+									<menuitem value="yearly" label="yearly" />
+									<menuitem value="never" label="never" />
+								</menupopup>
+							</menulist>
+							<spacer flex="1" />
+							<button anonid="btnSaveSitemapOptions" oncommand="saveSitemapOptions()" i18n:attributes="label &amp;modules.referencing.bo.general.CommitSpaced;" change:icon="check/small" />
+						</groupbox>
+						<vbox flex="10">
+							<listbox seltype="multiple" anonid="urlList" flex="1">
+								<listhead>
+									<listheader i18n:attributes="label &amp;modules.referencing.bo.general.Url;"/>
+									<listheader i18n:attributes="label &amp;modules.referencing.bo.general.PriorityAbbr;"/>
+									<listheader i18n:attributes="label &amp;modules.referencing.bo.general.ChangeFrequencyAbbr;"/>
+								</listhead>
+								<listcols>
+									<listcol flex="1"/>
+									<listcol width="50px"/>
+									<listcol width="70px"/>
+								</listcols>
+							</listbox>
+							
+							<groupbox anonid="urlOptionsGrid" collapsed="true" orient="vertical">
+								<caption change:i18nattr="label &amp;modules.referencing.bo.general.OptionForSelectedUrlGridCaption;" />
+								<description change:translate="&amp;modules.referencing.bo.general.Options-for-selected-url-help;" />
+								<hbox flex="1">
+									<label style="padding-top:3px" control="modules_referencing_sitemap_url_priority" change:i18nattr="value &amp;modules.referencing.bo.general.Priority;" />
+									<menulist anonid="sitemap_url_priority" id="modules_referencing_sitemap_url_priority">
+										<menupopup>
+											<menuitem value="-" label="-" />
+											<menuitem value="0" label="0" />
+											<menuitem value="0.1" label="0.1" />
+											<menuitem value="0.2" label="0.2" />
+											<menuitem value="0.3" label="0.3" />
+											<menuitem value="0.4" label="0.4" />
+											<menuitem value="0.5" label="0.5" />
+											<menuitem value="0.6" label="0.6" />
+											<menuitem value="0.7" label="0.7" />
+											<menuitem value="0.8" label="0.8" />
+											<menuitem value="0.9" label="0.9" />
+											<menuitem value="1" label="1" />
+										</menupopup>
+									</menulist>
+									<spacer flex="1" />
+									<label style="padding-top:3px" control="modules_referencing_sitemap_url_changefreq" change:i18nattr="value &amp;modules.referencing.bo.general.ChangeFrequency;" />
+									<menulist anonid="sitemap_url_changefreq" id="modules_referencing_sitemap_url_changefreq">
+										<menupopup>
+											<menuitem value="-" label="-" />
+											<menuitem value="always" label="always" />
+											<menuitem value="hourly" label="hourly" />
+											<menuitem value="daily" label="daily" />
+											<menuitem value="weekly" label="weekly" />
+											<menuitem value="monthly" label="monthly" />
+											<menuitem value="yearly" label="yearly" />
+											<menuitem value="never" label="never" />
+										</menupopup>
+									</menulist>
+									<spacer flex="1" />
+									<button anonid="btnSaveSitemapUrlOptions" oncommand="saveSitemapUrlOptions()" i18n:attributes="label &amp;modules.referencing.bo.general.CommitSpaced;" change:icon="check/small" />
+								</hbox>
+							</groupbox>							
+							
+						</vbox>
+					</vbox>
+					<splitter style="border: 0px none;" />
+					<vbox flex="2">
+						<description change:translate="&amp;modules.referencing.bo.general.ListOfUrlToExcludeLabel;"></description>
+						<textbox multiline="true" anonid="excludedUrlListContents" flex="1"></textbox>
+					</vbox>
+				</hbox>
+			</vbox>
+		
+		<!-- 1. Id files -->	
+			<vbox flex="1">
+				<toolbox>
+					<toolbar>
+						<toolbarbutton anonid="btnSaveIdInfo" oncommand="saveIdInfo()" i18n:attributes="label &amp;modules.referencing.bo.general.SaveSpaced;" change:icon="save/small" />
+    				</toolbar>
+    			</toolbox>
+    			<vbox flex="1" style="overflow: auto">
+	    			<groupbox flex="1">
+	    				<caption label="Google" />
+	    				<hbox flex="1">
+			    			<grid width="450px">
+			    				<columns>
+			    					<column width="100px" />
+			    					<column />
+			    				</columns>
+			    				<rows>
+			    					<row>
+			    						<label control="modules_referencing_google_id" change:i18nattr="value &amp;modules.referencing.bo.general.IdInFileName;" />
+			    						<textbox id="modules_referencing_google_id" anonid="ID_google_id" size="55" />
+			    					</row>
+			    					<row>
+			    						<label control="modules_referencing_google_content" change:i18nattr="value &amp;modules.referencing.bo.general.FileContents;" />
+			    						<textbox id="modules_referencing_google_content" anonid="ID_google_content" size="55" />
+			    					</row>
+			    					<row>
+			    						<spacer />
+			    						<description>google&lt;id&gt;.html</description>
+			    					</row>
+			    				</rows>
+			    			</grid>
+			    			<vbox flex="1" style="border-left: 5px solid silver; padding: 0 0 0 10px;">
+				    			<div xmlns="http://www.w3.org/1999/xhtml" style="padding: 0; margin: 0">
+					    			<p>L'ID du fichier est une chaîne comportant des lettres et des chiffres.</p>
+					    			<p>Exemple : 58c3126e9824bc6a</p>
+					    			<p>Le contenu du fichier est une chaîne comportant des lettres et des chiffres, généralement différente de l'ID du fichier.</p>
+				    				<p>Exemple : google-site-verification: google58c3126e9824bc6a.html</p>
+				    			</div>
+			    			</vbox>
+			    		</hbox>
+	    			</groupbox>
+
+	    			<groupbox flex="1">
+	    				<caption label="Yahoo!" />
+	    				<hbox flex="1">
+			    			<grid width="450px">
+			    				<columns>
+			    					<column width="100px" />
+			    					<column />
+			    				</columns>
+			    				<rows>
+			    					<row>
+			    						<label control="modules_referencing_yahoo_id" change:i18nattr="value &amp;modules.referencing.bo.general.IdInFileName;" />
+			    						<textbox id="modules_referencing_yahoo_id" anonid="ID_yahoo_id" size="55" />
+			    					</row>
+			    					<row>
+			    						<label control="modules_referencing_yahoo_content" change:i18nattr="value &amp;modules.referencing.bo.general.FileContents;" />
+			    						<textbox id="modules_referencing_yahoo_content" anonid="ID_yahoo_content" size="55" />
+			    					</row>
+			    					<row>
+			    						<spacer />
+			    						<description>y_key_&lt;id&gt;.html</description>
+			    					</row>
+			    				</rows>
+			    			</grid>
+			    			<vbox flex="1" style="border-left: 5px solid silver; padding: 0 0 0 10px">
+				    			<div xmlns="http://www.w3.org/1999/xhtml" style="padding: 0; margin: 0">
+				    			<p>L'ID du fichier est une chaîne comportant des lettres et des chiffres.</p>
+				    			<p>Exemple : 58c3126e9824bc6a</p>
+				    			<p>Le contenu du fichier est une chaîne comportant des lettres et des chiffres, généralement différente de l'ID du fichier.</p>
+				    			<p>Exemple : 0526b8692ec81e4d</p>
+				    			</div>
+			    			</vbox>
+			    		</hbox>
+	    			</groupbox>
+	    			
+	    			<groupbox flex="1">
+	    				<caption label="MSN" />
+	    				<hbox flex="1">
+			    			<grid width="450px">
+			    				<columns>
+			    					<column width="100px" />
+			    					<column />
+			    				</columns>
+			    				<rows>
+			    					<row>
+			    						<label control="modules_referencing_msn_content" change:i18nattr="value &amp;modules.referencing.bo.general.FileContents;" />
+			    						<textbox id="modules_referencing_msn_content" anonid="ID_msn_content" multiline="true" cols="55" rows="4" />
+			    					</row>
+			    					<row>
+			    						<spacer />
+			    						<description>LiveSearchSiteAuth.xml</description>
+			    					</row>
+			    				</rows>
+			    			</grid>
+			    			<vbox flex="1" style="border-left: 5px solid silver; padding: 0 0 0 10px">
+				    			<div xmlns="http://www.w3.org/1999/xhtml" style="padding: 0; margin: 0">
+				    			<p>Le contenu du fichier est du code XML.</p>
+				    			<p>Exemple : </p>
+				    			<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;users&gt;
+    &lt;user&gt;E2C89F327DE44B019C39588127EF2085&lt;/user&gt;
+&lt;/users&gt;
+								</pre>
+				    			</div>
+			    			</vbox>
+			    		</hbox>
+	    			</groupbox>
+				</vbox>
+			</vbox>
+		
+		<!-- 2. Redirections -->
+			<vbox flex="1">
+   				<toolbox>
+   					<toolbar>
+    					<toolbarbutton change:icon="refresh/small" i18n:attributes="label &amp;modules.uixul.bo.actions.RefreshSpaced;" oncommand="loadRedirectionList()" />
+    					<toolbarseparator />
+    					<toolbarbutton change:icon="add/small" i18n:attributes="label &amp;modules.referencing.bo.actions.Create-RedirectionSpaced;" oncommand="createRedirection()" />
+    					<toolbarbutton change:icon="delete/small" i18n:attributes="label &amp;modules.uixul.bo.actions.DeleteSpaced;" oncommand="deleteSelectedRedirections()" />
+    					<toolbarseparator />
+    					<toolbarbutton change:icon="upload/small" i18n:attributes="label &amp;modules.referencing.bo.actions.Upload-CSV-fileSpaced;" oncommand="uploadRedirectionsCSVFile()" />
+    					<toolbarbutton change:icon="download/small" i18n:attributes="label &amp;modules.referencing.bo.actions.Download-redirections-as-csvSpaced;" oncommand="downloadRedirectionsAsCSV()" />
+    					<toolbarspacer flex="1" />
+    					<toolbarbutton change:icon="check/small" i18n:attributes="label &amp;modules.referencing.bo.actions.Generate-redirections-fileSpaced;" oncommand="generateRedirectionFile()" />
+    				</toolbar>
+    			</toolbox>
+    			<listbox seltype="multiple" anonid="redirectionsList" flex="1">
+					<listhead>
+						<listheader hidden="true" label="ID"/>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.OldUrl;"/>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.NewUrl;"/>
+					</listhead>
+					<listcols>
+						<listcol hidden="true" width="50px"/>
+						<listcol flex="1"/>
+						<listcol flex="1"/>
+					</listcols>
+				</listbox>
+				<wform id="redirectionsForm" attachment="redirectionsList/editcomponent" />
+   			</vbox>
+	
+		<!-- 3. Robots.txt -->
+			<vbox flex="1">
+				<toolbox>
+					<toolbar>
+						<toolbarbutton anonid="btnLoadRobotsTxt" oncommand="loadRobotsTxt()" i18n:attributes="label &amp;modules.referencing.bo.general.ReloadSpaced;" change:icon="refresh/small" />
+    					<toolbarspacer flex="1" />
+						<toolbarbutton anonid="btnSaveRobotsTxt" oncommand="saveRobotsTxt()" i18n:attributes="label &amp;modules.referencing.bo.general.WriteRobotsTxtFileSpaced;" change:icon="save/small" disabled="true" />
+    				</toolbar>
+    			</toolbox>
+				<hbox flex="1">
+					<textbox multiline="true" anonid="robotsTxtContents" flex="1" />
+					<vbox width="300px">
+						<p xmlns="http://www.w3.org/1999/xhtml" style="margin: 0 4px 0 0">
+							<p style="border-top: 2px solid #a5bd29; color: #a5bd29; font-size: 12pt; text-transform: uppercase"><strong change:translate="&amp;modules.referencing.bo.general.Help;"></strong></p>
+							<h3>Syntaxe pour le contenu du fichier</h3>
+							<ul>
+								<li><strong>User-agent</strong>: nom du robot</li>
+								<li><strong>Disallow</strong>: chemin à ne pas indexer</li>
+								<li><strong>Sitemap</strong>: URL absolue du fichier sitemap.xml</li>
+							</ul>
+							<h3>Exemples de User-agent</h3> 
+							<ul>
+								<li>* : tous les robots</li>
+								<li>GoogleBot : Google</li>
+								<li>MsnBot : MSN</li>
+							</ul>
+							<h3>Exemples de Disallow</h3>
+							<ul>
+								<li>Disallow: /dossier/</li>
+								<li>Disallow: /fichier.html</li>
+								<li>Disallow: /dossier/fichier.html</li>
+							</ul>
+							<h3>Exemple de Sitemap</h3>
+							<ul>
+								<li>Sitemap: http://www.site.com/sitemap.xml</li>
+							</ul>
+						</p>
+						<spacer flex="1" />
+					</vbox>
+				</hbox>
+			</vbox>
+		
+		<!-- 4. URL rewriting -->
+			<vbox flex="1" width="500px" anonid="urlListContainer">
+				<listbox anonid="urlRewritingModuleList" flex="1">
+					<listhead>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.Module;"/>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.Internal-name;"/>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.Has-document;"/>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.Has-file;"/>
+						<listheader i18n:attributes="label &amp;modules.referencing.bo.general.Has-modification;"/>
+						<listheader hidden="true" label="documentId"/>
+					</listhead>
+					<listcols>
+						<listcol flex="5" />
+						<listcol flex="5" />
+						<listcol flex="1" />
+						<listcol flex="1" />
+						<listcol flex="1" />
+						<listcol hidden="true" />
+					</listcols>
+				</listbox>
+				<wform id="urlRewritingForm" module="referencing" />
+			</vbox>
+			
+		<!-- 5. Preferences and permissions -->
+			<vbox flex="1" orient="vertical">
+				<spacer flex="1"/>
+				<wform id="moduleForm" module="referencing" />
+			</vbox>
+				
+		</deck>
+		
+	</vbox>
+	
+	<splitter collapse="after">
+		<wsplitterbutton />
+	</splitter>
+	<wmultitree width="210" id="rscTree" candrag="true" hideheader="true" i18n:attributes="title &amp;modules.generic.backoffice.ResourcesTree;" />
+	
+</hbox>

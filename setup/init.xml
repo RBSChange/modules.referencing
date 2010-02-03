@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script>
+	<binding fileName="modules/list/persistentdocument/import/list_binding.xml" />
+	<binding fileName="modules/referencing/persistentdocument/import/referencing_binding.xml" />
+
+	<rootfolder module="preferences">
+		<referencingpreferences />
+	</rootfolder>
+		
+	<systemfolder module="list" relatedmodule="referencing">
+		<staticlist listid="modules_referencing/sitemappriorities"
+			label="Sitemap : valeurs de 'priority'" 
+			description="Liste des valeurs pour l'option 'priority' des fichiers Sitemap">
+				<staticitem label="0" value="0"/>
+				<staticitem label="0.1" value="0.1"/>
+				<staticitem label="0.2" value="0.2"/>
+				<staticitem label="0.3" value="0.3"/>
+				<staticitem label="0.4" value="0.4"/>
+				<staticitem label="0.5" value="0.5"/>
+				<staticitem label="0.6" value="0.6"/>
+				<staticitem label="0.7" value="0.7"/>
+				<staticitem label="0.8" value="0.8"/>
+				<staticitem label="0.9" value="0.9"/>
+				<staticitem label="1" value="1"/>
+		</staticlist>
+		
+		<staticlist listid="modules_referencing/sitemapchangefreqs"
+			label="Sitemap : valeurs de 'changefreq'" 
+			description="Liste des valeurs pour l'option 'changefreq' des fichiers Sitemap">
+				<staticitem label="Toujours" value="always"/>
+				<staticitem label="Toutes les heures" value="hourly"/>
+				<staticitem label="Tous les jours" value="daily"/>
+				<staticitem label="Toutes les semaines" value="weekly"/>
+				<staticitem label="Tous les mois" value="monthly"/>
+				<staticitem label="Tous les ans" value="yearly"/>
+				<staticitem label="Jamais" value="never"/>
+		</staticlist>
+		
+		<staticlist listid="modules_referencing/sitemapautogeneration"
+			label="Auto-génération des fichiers Sitemap" 
+			description="Auto-génération des fichiers Sitemap">
+				<staticitem label="Tous les jours" value="daily"/>
+				<staticitem label="Toutes les semaines" value="weekly"/>
+				<staticitem label="Tous les mois" value="monthly"/>
+				<staticitem label="Pas de génération automatique" value="never"/>
+		</staticlist>
+	</systemfolder>
+</script>

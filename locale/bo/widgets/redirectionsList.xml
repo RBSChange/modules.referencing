@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<localization>
+  <entity id="oldUrl">
+    <locale lang="fr">ancienne URL</locale>
+    <locale lang="en">old URL</locale>
+    <locale lang="de">alte URL</locale>
+  </entity>
+  <entity id="newUrl">
+    <locale lang="fr">nouvelle URL</locale>
+    <locale lang="en">new URL</locale>
+    <locale lang="de">neue URL</locale>
+  </entity>
+<!--
+	<entity id="">
+		<locale lang="fr"></locale>
+		<locale lang="en"></locale>
+	</entity>
+	-->
+</localization>

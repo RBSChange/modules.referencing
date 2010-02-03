@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<localization>
+  <entity id="document-name">
+    <locale lang="fr">préférences</locale>
+    <locale lang="de">Präferenzen</locale>
+  </entity>
+  <entity id="edition-form-title">
+    <locale lang="fr">préférences du module Référencement</locale>
+    <locale lang="en">Referencing module settings</locale>
+    <locale lang="de">Präferenzen des Moduls Referenzierung</locale>
+  </entity>
+  <entity id="sitemapAutoGeneration">
+    <locale lang="fr">mise à jour des fichiers Sitemap</locale>
+    <locale lang="en">sitemap files update</locale>
+    <locale lang="de">Aktualisierung der Sitemap Dateien</locale>
+  </entity>
+  <entity id="sitemapAutoGeneration-help">
+    <locale lang="fr">fréquence de mise à jour automatique des fichiers Sitemap</locale>
+    <locale lang="en">sitemap files update frequency</locale>
+    <locale lang="de">automatische Aktualisierungsfrequenz der Sitemap Dateien</locale>
+  </entity>
+  <entity id="sitemapDefaultPriority">
+    <locale lang="fr">priorité par défaut</locale>
+    <locale lang="en">default priority</locale>
+    <locale lang="de">Standardpriorität</locale>
+  </entity>
+  <entity id="sitemapDefaultPriority-help">
+    <locale lang="fr">priorité par défaut des URL pour lesquelles aucune priorité n'a été spécifiquement attribuée.</locale>
+    <locale lang="en">default URL priority for which no specific priority has been affected</locale>
+    <locale lang="de">Standardpriorität der URLs für die keine spezifische Priorität definiert wurde.</locale>
+  </entity>
+  <entity id="sitemapDefaultChangefreq">
+    <locale lang="fr">fréquence de modification par défaut</locale>
+    <locale lang="en">default change frequency</locale>
+    <locale lang="de">Standard Änderungsfrequenz</locale>
+  </entity>
+  <entity id="sitemapDefaultChangefreq-help">
+    <locale lang="fr">fréquence de modification par défaut des URL pour lesquelles aucune fréquence de modification n'a été spécifiquement attribuée.</locale>
+    <locale lang="en">default URL change frequency for which no specific change frequency has been affected</locale>
+    <locale lang="de">Standard Änderungsfrequenz der URLs für die keine spezifische Priorität definiert wurde.</locale>
+  </entity>
+</localization>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<localization>
+  <entity id="document-name">
+    <locale lang="fr">redirection</locale>
+    <locale lang="en">redirection</locale>
+    <locale lang="de">Weiterleitung</locale>
+  </entity>
+  <entity id="edition-form-title">
+    <locale lang="fr">propriétés de la redirection</locale>
+    <locale lang="en">redirection properties</locale>
+    <locale lang="de">Eigenschaften der Weiterleitung</locale>
+  </entity>
+  <entity id="label">
+    <locale lang="fr">libellé</locale>
+    <locale lang="en">label</locale>
+    <locale lang="de">Name</locale>
+  </entity>
+  <entity id="label-help">
+    <locale lang="fr">libellé</locale>
+    <locale lang="en">label</locale>
+    <locale lang="de">Name</locale>
+  </entity>
+  <entity id="oldUrl">
+    <locale lang="fr">ancienne URL</locale>
+    <locale lang="en">old URL</locale>
+    <locale lang="de">alte URL</locale>
+  </entity>
+  <entity id="oldUrl-help">
+    <locale lang="fr">Ancienne URL à rediriger : adresse relative de type /exemple.html.</locale>
+    <locale lang="de">weiterzuleitende alte URL: entsprechende Adresse der Art /Beispiel.html</locale>
+  </entity>
+  <entity id="newUrl">
+    <locale lang="fr">nouvelle URL</locale>
+    <locale lang="en">new URL</locale>
+    <locale lang="de">neue URL</locale>
+  </entity>
+  <entity id="newUrl-help">
+    <locale lang="fr">Nouvelle URL de destination : adresse absolue avec http://</locale>
+    <locale lang="de">Neue ZielURL: absolute Adresse mit http://</locale>
+  </entity>
+</localization>

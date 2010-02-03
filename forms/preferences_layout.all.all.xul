@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:i18n="http://phptal.motion-twin.com/i18n"
+	xmlns:tal="http://phptal.motion-twin.com/tal" xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal">
+	<tabbox flex="1">
+		<tabs>
+			<tab anonid="builder_auto-generated-tab" i18n:attributes="label &amp;modules.generic.bo.general.GeneralitiesSpaced;" change:icon="information/small shadow" />
+		</tabs>
+		<tabpanels flex="1">
+			<tabpanel anonid="builder_auto-generated-tabpanel" orient="vertical">
+				<grid flex="1">
+					<columns>
+						<column />
+						<column flex="1" />
+					</columns>
+					<rows>
+						<row>
+							<change:label xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" field="label" />
+							<change:field xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" name="label" />
+						</row>
+						<row>
+							<change:label xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" field="sitemapAutoGeneration" />
+							<change:field xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" name="sitemapAutoGeneration" />
+						</row>
+						<row>
+							<change:label xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" field="sitemapDefaultPriority" />
+							<change:field xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" name="sitemapDefaultPriority" />
+						</row>
+						<row>
+							<change:label xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" field="sitemapDefaultChangefreq" />
+							<change:field xmlns:change="http://www.rbs-change.eu/change-4.2/taglib/phptal" name="sitemapDefaultChangefreq" />
+						</row>
+					</rows>
+				</grid>
+			</tabpanel>
+		</tabpanels>
+	</tabbox>
+</layout>

@@ -1,0 +1,12 @@
+<options>
+	<option tal:repeat="option options" tal:attributes="name option/name" tal:content="option/value" />
+</options>
+<urlset>
+   <url tal:repeat="urlInfo urlInfoArray">
+      <loc tal:content="urlInfo/loc"></loc>
+      <lastmod tal:condition="urlInfo/lastmod" tal:content="urlInfo/lastmod"></lastmod>
+      <changefreq tal:condition="urlInfo/changefreq" tal:content="urlInfo/changefreq"></changefreq>
+      <priority tal:condition="urlInfo/priority" tal:content="urlInfo/priority"></priority>
+      <isExcluded tal:content="urlInfo/isExcluded"></isExcluded>
+   </url>
+</urlset>
