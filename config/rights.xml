@@ -27,6 +27,7 @@
 			<permission name="Activate.*" />
 			<permission name="Cancel.*" />
 			<permission name="List.*" />
+			<permission name="EditLocale"/>
 		</role>
 	</roles>
 </rights>
