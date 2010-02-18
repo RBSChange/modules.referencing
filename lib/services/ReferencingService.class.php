@@ -280,7 +280,7 @@ class referencing_ReferencingService extends BaseService
 		{
 			$models = array(f_persistentdocument_PersistentDocumentModel::getInstanceFromDocumentModelName($modelName));
 		}
-		$urlInfoArray = array();
+		$urlInfoArray = array();		
 		foreach ($models as $model)
 		{
 			$this->appendModelToUrlInfoArray($website, $model, $urlInfoArray, $includeExcludedUrl, $maxUrls);
@@ -387,12 +387,12 @@ class referencing_ReferencingService extends BaseService
 		$documentService = $model->getDocumentService();
 		if(f_util_ClassUtils::methodExists($documentService, 'getIdsForSitemap'))
 		{
-			$ids = $documentService->getIdsForSitemap($website, $maxUrl);
+			$resultArray = $documentService->getIdsForSitemap($website, $maxUrl);		
 		}
 		else
 		{
 			$resultArray = array();
-			$query = $this->getPersistentProvider()->createQuery($model->getName())->add(Restrictions::published())->add(Restrictions::eq('model', $model->getName()))->setProjection(Projections::property('id'));
+			$query = $model->getDocumentService()->createQuery()->add(Restrictions::published())->add(Restrictions::eq('model', $model->getName()))->setProjection(Projections::property('id'));
 			
 			if ($maxUrl > 0)
 			{
@@ -401,32 +401,27 @@ class referencing_ReferencingService extends BaseService
 			
 			if (($model instanceof website_persistentdocument_pagemodel) || ($model instanceof website_persistentdocument_pageexternalmodel))
 			{
-				$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->find();
+				$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->findColumn('id');
 			}
 			else
 			{
 				$tagName = $this->buildFunctionalTagName($model, 'detail');
 				if ($this->pageHasTag($tagName, $website))
 				{
-					$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->find();
+					$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->findColumn('id');
 				}
 				else
 				{
 					$tagName = $this->buildContextualTagName($model, 'detail');
 					if ($this->pageHasTag($tagName, $website))
 					{
-						$resultArray = $query->find();
+						$resultArray = $query->findColumn('id');
 					}
 				}
-			}
-			$ids = array();
-			foreach($resultArray as $row)
-			{
-				$ids[] = intval($row['id']);
-			}
+			}		
 		}
 		
-		return $ids;
+		return $resultArray;
 	}
 	
 	/**
