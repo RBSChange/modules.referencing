@@ -1,5 +1,5 @@
 <?php
-class referencing_GetRootFolderIdAction extends referencing_Action
+class referencing_GetRootFolderIdAction extends f_action_BaseJSONAction
 {
 	/**
 	 * @param Context $context
@@ -8,7 +8,6 @@ class referencing_GetRootFolderIdAction extends referencing_Action
 	public function _execute($context, $request)
 	{
 		$id = ModuleService::getInstance()->getRootFolderId('referencing');
-		$request->setAttribute('document', DocumentHelper::getDocumentInstance($id));
-		return self::getSuccessView();
+		return $this->sendJSON(array('id' => $id));
 	}
 }

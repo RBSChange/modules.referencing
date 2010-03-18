@@ -211,7 +211,7 @@ class referencing_ReferencingService extends BaseService
 	public function getSitemapExcludedUrlList($website)
 	{
 		$doc = $this->getInfoDocumentForWebsite($website);
-		if (! is_null($doc))
+		if ($doc !== null)
 		{
 			return $doc->getSitemapExcludedUrl();
 		}

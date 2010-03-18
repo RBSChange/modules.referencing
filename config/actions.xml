@@ -1,878 +1,740 @@
 <?xml version="1.0"?>
 <actions extends="generic">
-  
-<!-- websites list -->
-  <action name="initWebsiteList">
-    <body><![CDATA[
-  		this.loadWebsiteList();
-	]]></body>
-  </action>
-  <action name="loadWebsiteList">
-    <body><![CDATA[
-		this.execute("&amp;modules.referencing.bo.actions.LoadWebsiteList;", "LoadWebsiteList", { });
-	]]></body>
-  </action>
-  <action name="onLoadWebsiteListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var itemContainer = this.getElementById('websiteMenulist');
-		for (var i=0 ; i<e4x.website.length() ; i++)
-		{
-			var websiteId = e4x.website[i].@id.toString();
-			var websiteDomain = e4x.website[i].@domain.toString();
-			if (i == 0)
+	<!-- websites list -->
+	<action name="initWebsiteList">
+		<body><![CDATA[
+	  		this.loadWebsiteList();
+		]]></body>
+	</action>
+	<action name="loadWebsiteList">
+		<body><![CDATA[
+			this.execute("&amp;modules.referencing.bo.actions.LoadWebsiteList;", "LoadWebsiteList", { });
+		]]></body>
+	</action>
+	<action name="onLoadWebsiteListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var itemContainer = this.getElementById('websiteMenulist');
+			for (var i=0 ; i<e4x.website.length() ; i++)
 			{
-				this.currentWebsiteId = websiteId;
-			}
-			itemContainer.appendItem(e4x.website[i].toString() + " ("+websiteDomain+")", websiteId);
-		}
-		itemContainer.selectedIndex = 0;
-		this.loadModelList();
-		this.onWebsiteChanged(itemContainer);
-	]]></body>
-  </action>
-  <action name="onWebsiteChanged">
-    <parameter name="menulist"/>
-    <body><![CDATA[
-		this.currentWebsiteId = menulist.value;
-		this.updateUI();
-	]]></body>
-  </action>
-  <action name="loadModelList">
-    <body><![CDATA[
-		this.execute("&amp;modules.referencing.bo.actions.LoadModelList;", "LoadModelList", { });
-	]]></body>
-  </action>
-  <action name="onLoadModelListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var itemContainer = this.getElementById('modelMenuList');
-		itemContainer.appendItem("&amp;modules.referencing.bo.general.Select;", 'none');
-		for (var i=0 ; i<e4x.model.length() ; i++)
-		{
-			var key = e4x.model[i].@name.toString();
-			var label = e4x.model[i].toString();
-			itemContainer.appendItem(label + " (" + key + ")", key);
-		}
-		itemContainer.selectedIndex = 0;
-	]]></body>
-  </action>
-  <action name="onModelChanged">
-    <parameter name="menulist"/>
-    <body><![CDATA[
-		this.currentModelName = menulist.value;
-		this.updateUI();
-	]]></body>
-  </action>
-<!-- robots.txt management -->
-  <action name="loadRobotsTxt">
-    <body><![CDATA[
-		this.execute("&amp;modules.referencing.bo.actions.LoadRobotsTxt;", "LoadRobotsTxt", { websiteId: this.currentWebsiteId });
-	]]></body>
-  </action>
-  <action name="onLoadRobotsTxtSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var field = this.getElementById('robotsTxtContents');
-		field.value = e4x.contents.toString();
-		field.focus();
-		this.robotsTxtInitialValue = field.value;
-		if (!this.robotsTxtListener)
-		{
-			var module = this;
-			this.robotsTxtListener =
-			{
-				module : module,
-				handleEvent: function(e)
+				var websiteId = e4x.website[i].@id.toString();
+				var websiteDomain = e4x.website[i].@domain.toString();
+				if (i == 0)
 				{
-					this.module.onRobotsTxtChanged();
+					this.currentWebsiteId = websiteId;
+				}
+				itemContainer.appendItem(e4x.website[i].toString() + " ("+websiteDomain+")", websiteId);
+			}
+			itemContainer.selectedIndex = 0;
+			this.loadModelList();
+			this.onWebsiteChanged(itemContainer);
+		]]></body>
+	</action>
+	<action name="onWebsiteChanged">
+		<parameter name="menulist" />
+		<body><![CDATA[
+			this.currentWebsiteId = menulist.value;
+			this.updateUI();
+		]]></body>
+	</action>
+	<action name="loadModelList">
+		<body><![CDATA[
+			this.execute("&amp;modules.referencing.bo.actions.LoadModelList;", "LoadModelList", { });
+		]]></body>
+	</action>
+	<action name="onLoadModelListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var itemContainer = this.getElementById('modelMenuList');
+			itemContainer.appendItem("&amp;modules.referencing.bo.general.Select;", 'none');
+			for (var i=0 ; i<e4x.model.length() ; i++)
+			{
+				var key = e4x.model[i].@name.toString();
+				var label = e4x.model[i].toString();
+				itemContainer.appendItem(label + " (" + key + ")", key);
+			}
+			itemContainer.selectedIndex = 0;
+		]]></body>
+	</action>
+	<action name="onModelChanged">
+		<parameter name="menulist" />
+		<body><![CDATA[
+			this.currentModelName = menulist.value;
+			this.updateUI();
+		]]></body>
+	</action>
+	
+	<!-- Redirections management -->
+	<action name="createRedirection" icon="add" label="&amp;modules.referencing.bo.actions.Create-Redirection;">
+		<parameter name="listWidget" />
+		<body><![CDATA[
+	    	this.createDocumentWithParent({id: this.currentWebsiteId}, this.name, 'redirection', 'redirectionsForm');
+	    ]]></body>
+	</action>
+	<action name="deleteSelectedRedirections">
+		<body><![CDATA[
+	    	var ids = [ ], labels = [ ];
+	    	var listbox = this.getElementById('redirectionsList');
+	    	for (var i=0 ; i<listbox.selectedItems.length ; i++)
+	    	{
+	     		var item = listbox.selectedItems[i];
+	     		ids.push(item.childNodes[0].getAttribute('label'));
+	    		labels.push(item.childNodes[1].getAttribute('label'));
+	    	}
+	    	var message;
+	   		if (labels.length > 10)
+	    	{
+	    		locale = new wLocale("&amp;modules.referencing.bo.general.ReallyDeleteRedirections;");
+	    		locale.setAttribute("count", labels.length);
+	    		message = locale.toString();
+	    	}
+	    	else
+	    	{
+	     		message = "&amp;modules.referencing.bo.general.ReallyDeleteFollowingRedirections;" + "\n" + labels.join("\n");
+	    	}
+	    	if (confirm(message))
+	    	{
+	    		this.doDelete(ids, labels, [ this.currentWebsiteId ], null, this);
+	    	}
+	    ]]></body>
+	</action>
+	<action name="onDeleteSuccess">
+		<body><![CDATA[
+	    	this.loadRedirectionList();
+	    ]]></body>
+	</action>
+	<action name="downloadRedirectionsAsCSV">
+		<body><![CDATA[
+	    	window.open(this.getController().makeUrl('referencing', 'ExportRedirections', { websiteId: this.currentWebsiteId } ), 'rbs_change_modules_referencing_view_window', 'width=100,height=100,scrollbars=no');
+	    ]]></body>
+	</action>
+	<action name="uploadRedirectionsCSVFile">
+		<body><![CDATA[
+	    	wToolkit.dialog('referencing', 'UploadRedirectionsFile', { websiteId: this.currentWebsiteId } , { width:600, height:400 }, false, false);
+	    ]]></body>
+	</action>
+	<action name="generateRedirectionFile">
+		<body><![CDATA[
+	    	this.execute("&amp;modules.referencing.bo.actions.Generate-redirections-file;", "GenerateRedirectionsFile", { });
+	    ]]></body>
+	</action>
+	<action name="loadRedirectionList">
+		<body><![CDATA[
+			this.execute("&amp;modules.referencing.bo.actions.LoadRedirectionList;", "LoadRedirectionList", { websiteId: this.currentWebsiteId });
+		]]></body>
+	</action>
+	<action name="onLoadRedirectionListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var itemContainer = this.getElementById('redirectionsList');
+			
+			// Empty the listbox.
+			while (itemContainer.getRowCount())
+			{
+				itemContainer.removeItemAt(0);
+			}
+			
+			// Populate it with the new data.
+			for (var i=0 ; i<e4x.redirection.length() ; i++)
+			{
+				var cell0 = document.createElement('listcell');
+				cell0.setAttribute('label', e4x.redirection[i].@id.toString());
+				cell0.hidden = true; 
+				var cell1 = document.createElement('listcell');
+				cell1.setAttribute('label', e4x.redirection[i].@oldUrl.toString()); 
+				var cell2 = document.createElement('listcell');
+				cell2.setAttribute('label', e4x.redirection[i].@newUrl.toString()); 
+				var newItem = document.createElement('listitem');
+				newItem.appendChild(cell0);
+				newItem.appendChild(cell1);
+				newItem.appendChild(cell2);
+				itemContainer.appendChild(newItem);
+			}
+			itemContainer.selectedIndex = 0;
+		]]></body>
+	</action>
+	
+	<!--  Sitemap.xml management -->
+	<action name="generateSitemapFile">
+		<body><![CDATA[
+			if (confirm("&amp;modules.referencing.bo.actions.GenerateSitemapFileConfirm;")) 
+			{
+				this.execute("&amp;modules.referencing.bo.actions.GenerateSitemapFile;", "GenerateSitemapFile", { websiteId: this.currentWebsiteId });
+			}
+	    ]]></body>
+	</action>
+	<action name="saveExcludedUrlList">
+		<body><![CDATA[
+			this.execute("&amp;modules.referencing.bo.actions.SaveExcludedUrlList;", "SaveExcludedUrlList", { contents: this.getElementById('excludedUrlListContents').value, websiteId: this.currentWebsiteId });
+		]]></body>
+	</action>
+	<action name="onSaveExcludedUrlListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			this.getElementById('btnSaveExcludedUrlList').disabled = true;
+			var field = this.getElementById('excludedUrlListContents');
+			this.excludedUrlListInitialValue = field.value;
+			field.focus();
+			this.loadUrlList(true);
+		]]></body>
+	</action>
+	<action name="loadExcludedUrlList">
+		<body><![CDATA[
+			var parameters = {
+				websiteId: this.currentWebsiteId
+			};
+			this.execute("&amp;modules.referencing.bo.actions.LoadExcludedUrlList;", "LoadExcludedUrlList", parameters);
+		]]></body>
+	</action>
+	<action name="onLoadExcludedUrlListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var field = this.getElementById('excludedUrlListContents');
+			field.value = e4x.contents.toString();
+			field.focus();
+			this.excludedUrlListInitialValue = field.value;
+			if (!this.excludedUrlListListener)
+			{
+				var module = this;
+				this.excludedUrlListListener =
+				{
+					module : module,
+					handleEvent: function(e)
+					{
+						this.module.onExcludedUrlListChanged();
+					}
+				}
+				field.addEventListener('input', this.excludedUrlListListener, false);
+			}
+		]]></body>
+	</action>
+	<action name="onExcludedUrlListChanged">
+		<body><![CDATA[
+			var field = this.getElementById('excludedUrlListContents');
+			var saveButton = this.getElementById('btnSaveExcludedUrlList');
+			saveButton.disabled = (field.value == this.excludedUrlListInitialValue);
+		]]></body>
+	</action>
+	<action name="loadUrlList">
+		<parameter name="force" />
+		<body><![CDATA[		
+			if (!this.urlListLoaded || force == true)
+			{
+				// If there is no model selected, juste clear the list.
+				if (!this.currentModelName || this.currentModelName == 'none')
+				{
+					this.clearUrlListBox();
+				}			
+				// Else load the list.
+				else
+				{
+					var parameters = {
+						websiteId: this.currentWebsiteId,
+						modelName: this.currentModelName
+					};
+					this.execute("&amp;modules.referencing.bo.actions.LoadUrlList;", "LoadUrlList", parameters);
+					this.urlListLoaded = true;
 				}
 			}
-			field.addEventListener('input', this.robotsTxtListener, false);
-		}
 		]]></body>
-  </action>
-  <action name="onRobotsTxtChanged">
-    <body><![CDATA[
-		var field = this.getElementById('robotsTxtContents');
-		var saveButton = this.getElementById('btnSaveRobotsTxt');
-		saveButton.disabled = (field.value == this.robotsTxtInitialValue);
-	]]></body>
-  </action>
-  <action name="saveRobotsTxt">
-    <body><![CDATA[
-		this.execute("&amp;modules.referencing.bo.actions.SaveRobotsTxt;", "SaveRobotsTxt", { contents: this.getElementById('robotsTxtContents').value, websiteId: this.currentWebsiteId });
-	]]></body>
-  </action>
-  <action name="onSaveRobotsTxtSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		this.getElementById('btnSaveRobotsTxt').disabled = true;
-		var field = this.getElementById('robotsTxtContents');
-		this.robotsTxtInitialValue = field.value;
-		field.focus();
-	]]></body>
-  </action>
-<!-- Redirections management -->
-  <action name="createRedirection" icon="add" label="&amp;modules.referencing.bo.actions.Create-Redirection;">
-    <parameter name="listWidget"/>
-    <body><![CDATA[
-    	this.createDocumentWithParent({id: this.currentWebsiteId}, this.name, 'redirection', 'redirectionsForm');
-    ]]></body>
-  </action>
-  <action name="deleteSelectedRedirections">
-    <body><![CDATA[
-    	var ids = [ ], labels = [ ];
-    	var listbox = this.getElementById('redirectionsList');
-    	for (var i=0 ; i<listbox.selectedItems.length ; i++)
-    	{
-     		var item = listbox.selectedItems[i];
-     		ids.push(item.childNodes[0].getAttribute('label'));
-    		labels.push(item.childNodes[1].getAttribute('label'));
-    	}
-    	var message;
-   		if (labels.length > 10)
-    	{
-    		locale = new wLocale("&amp;modules.referencing.bo.general.ReallyDeleteRedirections;");
-    		locale.setAttribute("count", labels.length);
-    		message = locale.toString();
-    	}
-    	else
-    	{
-     		message = "&amp;modules.referencing.bo.general.ReallyDeleteFollowingRedirections;" + "\n" + labels.join("\n");
-    	}
-    	if (confirm(message))
-    	{
-    		this.doDelete(ids, labels, [ this.currentWebsiteId ], null, this);
-    	}
-    ]]></body>
-  </action>
-  <action name="onDeleteSuccess">
-    <body><![CDATA[
-    	this.loadRedirectionList();
-    ]]></body>
-  </action>
-  <action name="downloadRedirectionsAsCSV">
-    <body><![CDATA[
-    	window.open(this.getController().makeUrl('referencing', 'ExportRedirections', { websiteId: this.currentWebsiteId } ), 'rbs_change_modules_referencing_view_window', 'width=100,height=100,scrollbars=no');
-    ]]></body>
-  </action>
-  <action name="uploadRedirectionsCSVFile">
-    <body><![CDATA[
-    	wToolkit.dialog('referencing', 'UploadRedirectionsFile', { websiteId: this.currentWebsiteId } , { width:600, height:400 }, false, false);
-    ]]></body>
-  </action>
-  <action name="generateRedirectionFile">
-    <body><![CDATA[
-    	this.execute("&amp;modules.referencing.bo.actions.Generate-redirections-file;", "GenerateRedirectionsFile", { });
-    ]]></body>
-  </action>
-  <action name="loadRedirectionList">
-    <body><![CDATA[
-		this.execute("&amp;modules.referencing.bo.actions.LoadRedirectionList;", "LoadRedirectionList", { websiteId: this.currentWebsiteId });
-	]]></body>
-  </action>
-  <action name="onLoadRedirectionListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var itemContainer = this.getElementById('redirectionsList');
-		
-		// Empty the listbox.
-		while (itemContainer.getRowCount())
-		{
-			itemContainer.removeItemAt(0);
-		}
-		
-		// Populate it with the new data.
-		for (var i=0 ; i<e4x.redirection.length() ; i++)
-		{
-			var cell0 = document.createElement('listcell');
-			cell0.setAttribute('label', e4x.redirection[i].@id.toString());
-			cell0.hidden = true; 
-			var cell1 = document.createElement('listcell');
-			cell1.setAttribute('label', e4x.redirection[i].@oldUrl.toString()); 
-			var cell2 = document.createElement('listcell');
-			cell2.setAttribute('label', e4x.redirection[i].@newUrl.toString()); 
-			var newItem = document.createElement('listitem');
-			newItem.appendChild(cell0);
-			newItem.appendChild(cell1);
-			newItem.appendChild(cell2);
-			itemContainer.appendChild(newItem);
-		}
-		itemContainer.selectedIndex = 0;
-	]]></body>
-  </action>
-<!--  Sitemap.xml management -->
-  <action name="generateSitemapFile">
-    <body><![CDATA[
-      if (confirm("&amp;modules.referencing.bo.actions.GenerateSitemapFileConfirm;")) {
-         this.execute("&amp;modules.referencing.bo.actions.GenerateSitemapFile;", "GenerateSitemapFile", { websiteId: this.currentWebsiteId });
-      }
-    ]]></body>
-  </action>
-  <action name="saveExcludedUrlList">
-    <body><![CDATA[
-		this.execute("&amp;modules.referencing.bo.actions.SaveExcludedUrlList;", "SaveExcludedUrlList", { contents: this.getElementById('excludedUrlListContents').value, websiteId: this.currentWebsiteId });
-	]]></body>
-  </action>
-  <action name="onSaveExcludedUrlListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		this.getElementById('btnSaveExcludedUrlList').disabled = true;
-		var field = this.getElementById('excludedUrlListContents');
-		this.excludedUrlListInitialValue = field.value;
-		field.focus();
-		this.loadUrlList(true);
-	]]></body>
-  </action>
-  <action name="loadExcludedUrlList">
-    <body><![CDATA[
-		var parameters = {
-			websiteId: this.currentWebsiteId
-		};
-		this.execute("&amp;modules.referencing.bo.actions.LoadExcludedUrlList;", "LoadExcludedUrlList", parameters);
-	]]></body>
-  </action>
-  <action name="onLoadExcludedUrlListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var field = this.getElementById('excludedUrlListContents');
-		field.value = e4x.contents.toString();
-		field.focus();
-		this.excludedUrlListInitialValue = field.value;
-		if (!this.excludedUrlListListener)
-		{
-			var module = this;
-			this.excludedUrlListListener =
+	</action>
+	<action name="onLoadUrlListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+	    	// Update priority and changefreq listboxes.
+			this.getElementById('sitemap_priority').value = e4x.options.option.(@name=="priority").toString();
+			this.getElementById('sitemap_changefreq').value = e4x.options.option.(@name=="changefreq").toString();
+	    
+			var listBox = this.getElementById('urlList');
+			// Empty the listbox.
+			this.clearUrlListBox();
+			
+			// Populate it with the new data.
+			for (var i=0 ; i<e4x.urlset.url.length() ; i++)
 			{
-				module : module,
-				handleEvent: function(e)
+	
+				var cell0 = document.createElement('listcell');
+				cell0.setAttribute('label', e4x.urlset.url[i].loc.toString());
+				var cell1 = document.createElement('listcell');
+				cell1.setAttribute('label', e4x.urlset.url[i].priority.toString()); 
+				var cell2 = document.createElement('listcell');
+				cell2.setAttribute('label', e4x.urlset.url[i].changefreq.toString()); 
+				var newItem = document.createElement('listitem');
+				newItem.appendChild(cell0);
+				newItem.appendChild(cell1);
+				newItem.appendChild(cell2);
+				if (e4x.urlset.url[i].isExcluded.toString() == '1')
 				{
-					this.module.onExcludedUrlListChanged();
+					newItem.setAttribute('class', 'excluded');
 				}
+				listBox.appendChild(newItem);
 			}
-			field.addEventListener('input', this.excludedUrlListListener, false);
-		}
+			
+			// Focus it.
+			listBox.focus();
 		]]></body>
-  </action>
-  <action name="onExcludedUrlListChanged">
-    <body><![CDATA[
-		var field = this.getElementById('excludedUrlListContents');
-		var saveButton = this.getElementById('btnSaveExcludedUrlList');
-		saveButton.disabled = (field.value == this.excludedUrlListInitialValue);
-	]]></body>
-  </action>
-  <action name="loadUrlList">
-    <parameter name="force"/>
-    <body><![CDATA[		
-		if (!this.urlListLoaded || force == true)
-		{
-			// If there is no model selected, juste clear the list.
-			if (!this.currentModelName || this.currentModelName == 'none')
+	</action>
+	<action name="clearUrlListBox">
+		<body><![CDATA[
+	    	var listBox = this.getElementById('urlList');
+			// Empty the listbox.
+			while (listBox.getRowCount())
 			{
-				this.clearUrlListBox();
-			}			
-			// Else load the list.
-			else
-			{
-				var parameters = {
-					websiteId: this.currentWebsiteId,
-					modelName: this.currentModelName
-				};
-				this.execute("&amp;modules.referencing.bo.actions.LoadUrlList;", "LoadUrlList", parameters);
-				this.urlListLoaded = true;
+				listBox.removeItemAt(0);
 			}
-		}
-	]]></body>
-  </action>
-  <action name="onLoadUrlListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-    	// Update priority and changefreq listboxes.
-		this.getElementById('sitemap_priority').value = e4x.options.option.(@name=="priority").toString();
-		this.getElementById('sitemap_changefreq').value = e4x.options.option.(@name=="changefreq").toString();
-    
-		var listBox = this.getElementById('urlList');
-		// Empty the listbox.
-		this.clearUrlListBox();
-		
-		// Populate it with the new data.
-		for (var i=0 ; i<e4x.urlset.url.length() ; i++)
-		{
-
-			var cell0 = document.createElement('listcell');
-			cell0.setAttribute('label', e4x.urlset.url[i].loc.toString());
-			var cell1 = document.createElement('listcell');
-			cell1.setAttribute('label', e4x.urlset.url[i].priority.toString()); 
-			var cell2 = document.createElement('listcell');
-			cell2.setAttribute('label', e4x.urlset.url[i].changefreq.toString()); 
-			var newItem = document.createElement('listitem');
-			newItem.appendChild(cell0);
-			newItem.appendChild(cell1);
-			newItem.appendChild(cell2);
-			if (e4x.urlset.url[i].isExcluded.toString() == '1')
+		]]></body>
+	</action>
+	<action name="onUrlSelected">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var listBox = this.getElementById('urlList');
+			if (listBox.selectedItems.length > 0)
 			{
-				newItem.setAttribute('class', 'excluded');
-			}
-			listBox.appendChild(newItem);
-		}
-		
-		// Focus it.
-		listBox.focus();
-	]]></body>
-  </action>
-  <action name="clearUrlListBox">
-    <body><![CDATA[
-    	var listBox = this.getElementById('urlList');
-		// Empty the listbox.
-		while (listBox.getRowCount())
-		{
-			listBox.removeItemAt(0);
-		}
-	]]></body>
-  </action>
-  <action name="onUrlSelected">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var listBox = this.getElementById('urlList');
-		if (listBox.selectedItems.length > 0)
-		{
-			var priority = listBox.selectedItems[0].childNodes[1].getAttribute('label');
-			var changeFreq = listBox.selectedItems[0].childNodes[2].getAttribute('label');
+				var priority = listBox.selectedItems[0].childNodes[1].getAttribute('label');
+				var changeFreq = listBox.selectedItems[0].childNodes[2].getAttribute('label');
+				var priorityListBox = this.getElementById('sitemap_url_priority'); 
+				var changeFreqListBox = this.getElementById('sitemap_url_changefreq');
+				priorityListBox.value = priority;
+				changeFreqListBox.value = changeFreq;
+				
+		 		var different = false;
+		    	for (var i=1 ; i<listBox.selectedItems.length && ! different ; i++)
+		    	{
+		    		var item = listBox.selectedItems[i];
+		    		var p = item.childNodes[1].getAttribute('label');
+		    		var c = item.childNodes[2].getAttribute('label');
+		    		if (priority != p)
+		    		{
+		    			priorityListBox.value = '-';
+		    			different = true;
+		    		}
+		    		else
+		    		{
+		    			priorityListBox.value = priority;
+		    		}
+		    		if (changeFreq != c)
+		    		{
+		    			changeFreqListBox.value = '-';
+		    			different = true;
+		    		}
+		    		else
+		    		{
+		    			changeFreqListBox.value = changeFreq;
+		    		}
+		    	}
+		    }
+			this.updateOptionsUrlButton();
+	    ]]></body>
+	</action>
+	<action name="updateOptionsUrlButton">
+		<body><![CDATA[
+			var listBox = this.getElementById('urlList');
 			var priorityListBox = this.getElementById('sitemap_url_priority'); 
 			var changeFreqListBox = this.getElementById('sitemap_url_changefreq');
-			priorityListBox.value = priority;
-			changeFreqListBox.value = changeFreq;
-			
-	 		var different = false;
-	    	for (var i=1 ; i<listBox.selectedItems.length && ! different ; i++)
-	    	{
-	    		var item = listBox.selectedItems[i];
-	    		var p = item.childNodes[1].getAttribute('label');
-	    		var c = item.childNodes[2].getAttribute('label');
-	    		if (priority != p)
-	    		{
-	    			priorityListBox.value = '-';
-	    			different = true;
-	    		}
-	    		else
-	    		{
-	    			priorityListBox.value = priority;
-	    		}
-	    		if (changeFreq != c)
-	    		{
-	    			changeFreqListBox.value = '-';
-	    			different = true;
-	    		}
-	    		else
-	    		{
-	    			changeFreqListBox.value = changeFreq;
-	    		}
-	    	}
-	    }
-		this.updateOptionsUrlButton();
-    ]]></body>
-  </action>
-  <action name="updateOptionsUrlButton">
-    <body><![CDATA[
-		var listBox = this.getElementById('urlList');
-		var priorityListBox = this.getElementById('sitemap_url_priority'); 
-		var changeFreqListBox = this.getElementById('sitemap_url_changefreq');
-		this.getElementById('btnSaveSitemapUrlOptions').disabled = priorityListBox.value == '-' || changeFreqListBox.value == '-' || listBox.selectedItems.length == 0;
-    ]]></body>
-  </action>
-  <action name="toggleViewUrlList">
-    <body><![CDATA[
-		var box = this.getElementById('urlListContainer');
-		box.collapsed = ! box.collapsed;
-		if ( ! box.collapsed )
-		{
-			this.loadUrlList();
-		}
-		var toggleButton = this.getElementById('btnToggleViewUrlList');
-		toggleButton.setAttribute('label', box.collapsed ? "&modules.referencing.bo.general.ShowUrlListSpaced;" : "&modules.referencing.bo.general.HideUrlListSpaced;");
-		this.getElementById('btnExcludeUrl').disabled = box.collapsed;
-		this.getElementById('btnRefreshUrlList').disabled = box.collapsed;
-  	]]></body>
-  </action>
-  <action name="onModuleInit">
-    <body><![CDATA[
-    	this.excludedUrlListInitialValue = null;
-    	this.robotsTxtInitialValue = null;
-    	this.currentTabIndex = 0;
-    	this.initListerners();
-    	this.initWebsiteList();
-    ]]></body>
-  </action>
-  <action name="initListerners">
-    <body><![CDATA[
-    	var module = this;
-    	
-    	var listbox = this.getElementById('redirectionsList');
-    	var handler = {
-    		handleEvent: function(e) {
-    			module.editSelectedRedirection();
-    		}    	
-    	};
-    	listbox.addEventListener('dblclick', handler, false);
-    	
-    	var listbox = this.getElementById('urlList');
-    	var handler = {
-    		handleEvent: function(e) {
-    			module.onUrlSelected();
-    		}    	
-    	};
-    	listbox.addEventListener('select', handler, false);
-    	
-    	var listbox = this.getElementById('sitemap_url_changefreq');
-    	var handler = {
-    		handleEvent: function(e) {
-    			module.updateOptionsUrlButton();
-    		}    	
-    	};
-    	listbox.addEventListener('command', handler, false);
-    	
-    	var listbox = this.getElementById('sitemap_url_priority');
-    	var handler = {
-    		handleEvent: function(e) {
-    			module.updateOptionsUrlButton();
-    		}    	
-    	};
-    	listbox.addEventListener('command', handler, false);
-    	
-    	// Url rewriting.
-    	var listbox = this.getElementById('urlRewritingModuleList');
-    	var handler = {
-    		handleEvent: function(e) {
-    			module.editSelectedUrlRewriting();
-    		}    	
-    	};
-    	listbox.addEventListener('dblclick', handler, false);
-    ]]></body>
-  </action>
-  <action name="editRedirection">
-    <parameter name="id"/>
-    <parameter name="lang"/>
-    <body><![CDATA[
-		var xml =
-			'<documents>'
-			+ '<document>'
-			+ '<component name="id">' + id + '</component>'
-			+ '<component name="lang">' + lang + '</component>'
-			+ '<component name="type">modules_referencing_redirection</component>'
-			+ '</document>'
-			+ '</documents>';
-		var form = this.getElementById('redirectionsForm');
-		form.setAttribute('editcomponent', xml);
-		form.handleBroadcast();
-    ]]></body>
-  </action>
-  <action name="editSelectedRedirection">
-    <body><![CDATA[
-    	var listbox = this.getElementById('redirectionsList');
-    	var id = listbox.selectedItems[0].childNodes[0].getAttribute('label');
-		var lang = 'fr';
-		this.editRedirection(id, lang);
-    ]]></body>
-  </action>
-  <action name="excludeUrl">
-    <body><![CDATA[
-		var listBox = this.getElementById('urlList');
-		for (var i=0 ; i<listBox.selectedItems.length ; i++)
-		{
-			var item = listBox.selectedItems[i];
-			if (item.getAttribute('class') != 'excluded')
-			{ 
-				var url = item.childNodes[0].getAttribute('label');
-				item.setAttribute('class', 'excluded');
-				var excludedUrlList = this.getElementById('excludedUrlListContents');
-				excludedUrlList.value += "\n" + url;
-				this.onExcludedUrlListChanged();
+			this.getElementById('btnSaveSitemapUrlOptions').disabled = priorityListBox.value == '-' || changeFreqListBox.value == '-' || listBox.selectedItems.length == 0;
+	    ]]></body>
+	</action>
+	<action name="toggleViewUrlList">
+		<body><![CDATA[
+			var box = this.getElementById('urlListContainer');
+			box.collapsed = ! box.collapsed;
+			if ( ! box.collapsed )
+			{
+				this.loadUrlList();
 			}
-		}
-    ]]></body>
-  </action>
-  <action name="toggleOptionsGrid">
-    <body><![CDATA[
-    	var grid = this.getElementById('optionsGrid');
-    	grid.collapsed = ! grid.collapsed;
-    ]]></body>
-  </action>
-  <action name="saveSitemapOptions">
-    <body><![CDATA[
-		var parameters = {
-			websiteId: this.currentWebsiteId,
-			modelName: this.currentModelName,
-			priority: this.getElementById('sitemap_priority').value,
-			changefreq: this.getElementById('sitemap_changefreq').value
-			};
-		this.execute("&amp;modules.referencing.bo.actions.SaveSitemapOptions;", "SaveSitemapOptions", parameters);
-    ]]></body>
-  </action>
-  <action name="saveSitemapUrlOptions">
-    <body><![CDATA[
-    	var urls = [ ];
-		var listBox = this.getElementById('urlList');
-		for (var i=0 ; i<listBox.selectedItems.length ; i++)
-		{
-			urls.push(listBox.selectedItems[i].childNodes[0].getAttribute('label'));
-    	}
-    	var priority = this.getElementById('sitemap_url_priority').value;
-    	var changeFreq = this.getElementById('sitemap_url_changefreq').value;
-    	if (priority != '-' && changeFreq != '-')
-    	{
+			var toggleButton = this.getElementById('btnToggleViewUrlList');
+			toggleButton.setAttribute('label', box.collapsed ? "&modules.referencing.bo.general.ShowUrlListSpaced;" : "&modules.referencing.bo.general.HideUrlListSpaced;");
+			this.getElementById('btnExcludeUrl').disabled = box.collapsed;
+			this.getElementById('btnRefreshUrlList').disabled = box.collapsed;
+	  	]]></body>
+	</action>
+	<action name="onModuleInit">
+		<body><![CDATA[
+	    	this.excludedUrlListInitialValue = null;
+	    	this.robotsTxtInitialValue = null;
+	    	this.currentTabIndex = 0;
+	    	this.initListerners();
+	    	this.initWebsiteList();
+	    ]]></body>
+	</action>
+	<action name="initListerners">
+		<body><![CDATA[
+	    	var module = this;
+	    	
+	    	var listbox = this.getElementById('redirectionsList');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.editSelectedRedirection();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('dblclick', handler, false);
+	    	
+	    	var listbox = this.getElementById('urlList');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.onUrlSelected();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('select', handler, false);
+	    	
+	    	var listbox = this.getElementById('sitemap_url_changefreq');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.updateOptionsUrlButton();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('command', handler, false);
+	    	
+	    	var listbox = this.getElementById('sitemap_url_priority');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.updateOptionsUrlButton();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('command', handler, false);
+	    	
+	    	// Url rewriting.
+	    	var listbox = this.getElementById('urlRewritingModuleList');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.editSelectedUrlRewriting();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('dblclick', handler, false);
+	    ]]></body>
+	</action>
+	<action name="editRedirection">
+		<parameter name="id" />
+		<parameter name="lang" />
+		<body><![CDATA[
+			var xml =
+				'<documents>'
+				+ '<document>'
+				+ '<component name="id">' + id + '</component>'
+				+ '<component name="lang">' + lang + '</component>'
+				+ '<component name="type">modules_referencing_redirection</component>'
+				+ '</document>'
+				+ '</documents>';
+			var form = this.getElementById('redirectionsForm');
+			form.setAttribute('editcomponent', xml);
+			form.handleBroadcast();
+	    ]]></body>
+	</action>
+	<action name="editSelectedRedirection">
+		<body><![CDATA[
+	    	var listbox = this.getElementById('redirectionsList');
+	    	var id = listbox.selectedItems[0].childNodes[0].getAttribute('label');
+			var lang = 'fr';
+			this.editRedirection(id, lang);
+	    ]]></body>
+	</action>
+	<action name="excludeUrl">
+		<body><![CDATA[
+			var listBox = this.getElementById('urlList');
+			for (var i=0 ; i<listBox.selectedItems.length ; i++)
+			{
+				var item = listBox.selectedItems[i];
+				if (item.getAttribute('class') != 'excluded')
+				{ 
+					var url = item.childNodes[0].getAttribute('label');
+					item.setAttribute('class', 'excluded');
+					var excludedUrlList = this.getElementById('excludedUrlListContents');
+					excludedUrlList.value += "\n" + url;
+					this.onExcludedUrlListChanged();
+				}
+			}
+	    ]]></body>
+	</action>
+	<action name="toggleOptionsGrid">
+		<body><![CDATA[
+	    	var grid = this.getElementById('optionsGrid');
+	    	grid.collapsed = ! grid.collapsed;
+	    ]]></body>
+	</action>
+	<action name="saveSitemapOptions">
+		<body><![CDATA[
 			var parameters = {
 				websiteId: this.currentWebsiteId,
 				modelName: this.currentModelName,
-				priority: priority,
-				changefreq: changeFreq,
-				urls : urls
+				priority: this.getElementById('sitemap_priority').value,
+				changefreq: this.getElementById('sitemap_changefreq').value
 				};
 			this.execute("&amp;modules.referencing.bo.actions.SaveSitemapOptions;", "SaveSitemapOptions", parameters);
-		}
-    ]]></body>
-  </action>
-  <action name="onSaveSitemapOptionsSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-    	this.loadUrlList(true);
-    ]]></body>
-  </action>
-  <action name="toggleUrlOptionsGrid">
-    <body><![CDATA[
-    	var grid = this.getElementById('urlOptionsGrid');
-    	grid.collapsed = ! grid.collapsed;
-    ]]></body>
-  </action>
-<!--  ID files management -->
-  <action name="saveIdInfo">
-    <body><![CDATA[
-    	var parameters = {
-    		websiteId: this.currentWebsiteId,
-    		googleId: this.getElementById("ID_google_id").value,
-    		googleContent: this.getElementById("ID_google_content").value,
-    		yahooId: this.getElementById("ID_yahoo_id").value,
-    		yahooContent: this.getElementById("ID_yahoo_content").value,
-    		msnContent: this.getElementById("ID_msn_content").value
-    	};
-    	this.execute("&amp;modules.referencing.bo.actions.SaveIdInfo;", "SaveIdInfo", parameters);
-    ]]></body>
-  </action>
-  <action name="loadIdInfo">
-    <body><![CDATA[
-    	var parameters = {
-    		websiteId: this.currentWebsiteId,
-    		};
-    	this.execute("&amp;modules.referencing.bo.actions.LoadIdInfo;", "LoadIdInfo", parameters);
-    ]]></body>
-  </action>
-  <action name="onLoadIdInfoSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-   		this.getElementById("ID_google_id").value = e4x.contents.engine.(@name=="google").@id.toString(); 
-   		this.getElementById("ID_yahoo_id").value = e4x.contents.engine.(@name=="yahoo").@id.toString();
-   		this.getElementById("ID_yahoo_content").value = e4x.contents.engine.(@name=="yahoo").toString();
-   		this.getElementById("ID_msn_content").value = e4x.contents.engine.(@name=="msn").toString();
-    ]]></body>
-  </action>
-  
-<!-- URL rewriting -->
-
-  <action name="loadUrlRewritingModuleList">
-    <body><![CDATA[
-    	this.execute("&amp;modules.referencing.bo.actions.Load-url-rewriting-module-list;", "LoadUrlRewritingModuleList", {});
-    ]]></body>
-  </action>
-  <action name="onLoadUrlRewritingModuleListSuccess">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		var listBox = this.getElementById('urlRewritingModuleList');
-		
-		// Empty the listbox.
-		while (listBox.getRowCount())
-		{
-			listBox.removeItemAt(0);
-		}
-		
-		// Populate it with the new data.
-		for (var i = 0 ; i < e4x.modules.module.length() ; i++)
-		{
-			var e4xModule = e4x.modules.module[i];
-			
-			var cell0 = document.createElement('listcell');
-			cell0.setAttribute('label', e4xModule.toString());
-			
-			var cell1 = document.createElement('listcell');
-			cell1.setAttribute('label', e4xModule.@name.toString());
-			
-			var cell2 = document.createElement('listcell');
-			var hasDocument = (e4xModule.@hasDocument.toString() == 'true');
-			cell2.setAttribute('label', hasDocument ? "&amp;modules.referencing.bo.general.Yes;" : ''); 
-			
-			var cell3 = document.createElement('listcell');
-			var hasDefinitionFile = (e4xModule.@hasDefinitionFile.toString() == 'true');
-			cell3.setAttribute('label', hasDefinitionFile ? "&amp;modules.referencing.bo.general.Yes;" : ''); 
-			
-			var cell4 = document.createElement('listcell');
-			var hasDefinitionFileChanged = (e4xModule.@hasDefinitionFileChanged.toString() == 'true');
-			cell4.setAttribute('label', hasDefinitionFileChanged ? "&amp;modules.referencing.bo.general.Yes;" : ''); 
-			
-			var cell5 = document.createElement('listcell');
-			var documentId = (e4xModule.@documentId.toString());
-			cell5.setAttribute('label', documentId); 
-			cell5.setAttribute('hidden', true); 
-			
-			var newItem = document.createElement('listitem');
-			newItem.appendChild(cell0);
-			newItem.appendChild(cell1);
-			newItem.appendChild(cell2);
-			newItem.appendChild(cell3);
-			newItem.appendChild(cell4);
-			newItem.appendChild(cell5);
-			
-			// Set colors and tooltips.
-			if (e4xModule.@hasDefinitionFile.toString() == 'true')
+	    ]]></body>
+	</action>
+	<action name="saveSitemapUrlOptions">
+		<body><![CDATA[
+	    	var urls = [ ];
+			var listBox = this.getElementById('urlList');
+			for (var i=0 ; i<listBox.selectedItems.length ; i++)
 			{
-				if (e4xModule.@hasDefinitionFileChanged.toString() == 'true')
+				urls.push(listBox.selectedItems[i].childNodes[0].getAttribute('label'));
+	    	}
+	    	var priority = this.getElementById('sitemap_url_priority').value;
+	    	var changeFreq = this.getElementById('sitemap_url_changefreq').value;
+	    	if (priority != '-' && changeFreq != '-')
+	    	{
+				var parameters = {
+					websiteId: this.currentWebsiteId,
+					modelName: this.currentModelName,
+					priority: priority,
+					changefreq: changeFreq,
+					urls : urls
+					};
+				this.execute("&amp;modules.referencing.bo.actions.SaveSitemapOptions;", "SaveSitemapOptions", parameters);
+			}
+	    ]]></body>
+	</action>
+	<action name="onSaveSitemapOptionsSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+	    	this.loadUrlList(true);
+	    ]]></body>
+	</action>
+	<action name="toggleUrlOptionsGrid">
+		<body><![CDATA[
+	    	var grid = this.getElementById('urlOptionsGrid');
+	    	grid.collapsed = ! grid.collapsed;
+	    ]]></body>
+	</action>
+	
+	<!-- URL rewriting -->
+	<action name="loadUrlRewritingModuleList">
+		<body><![CDATA[
+	    	this.execute("&amp;modules.referencing.bo.actions.Load-url-rewriting-module-list;", "LoadUrlRewritingModuleList", {});
+	    ]]></body>
+	</action>
+	<action name="onLoadUrlRewritingModuleListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var listBox = this.getElementById('urlRewritingModuleList');
+			
+			// Empty the listbox.
+			while (listBox.getRowCount())
+			{
+				listBox.removeItemAt(0);
+			}
+			
+			// Populate it with the new data.
+			for (var i = 0 ; i < e4x.modules.module.length() ; i++)
+			{
+				var e4xModule = e4x.modules.module[i];
+				
+				var cell0 = document.createElement('listcell');
+				cell0.setAttribute('label', e4xModule.toString());
+				
+				var cell1 = document.createElement('listcell');
+				cell1.setAttribute('label', e4xModule.@name.toString());
+				
+				var cell2 = document.createElement('listcell');
+				var hasDocument = (e4xModule.@hasDocument.toString() == 'true');
+				cell2.setAttribute('label', hasDocument ? "&amp;modules.referencing.bo.general.Yes;" : ''); 
+				
+				var cell3 = document.createElement('listcell');
+				var hasDefinitionFile = (e4xModule.@hasDefinitionFile.toString() == 'true');
+				cell3.setAttribute('label', hasDefinitionFile ? "&amp;modules.referencing.bo.general.Yes;" : ''); 
+				
+				var cell4 = document.createElement('listcell');
+				var hasDefinitionFileChanged = (e4xModule.@hasDefinitionFileChanged.toString() == 'true');
+				cell4.setAttribute('label', hasDefinitionFileChanged ? "&amp;modules.referencing.bo.general.Yes;" : ''); 
+				
+				var cell5 = document.createElement('listcell');
+				var documentId = (e4xModule.@documentId.toString());
+				cell5.setAttribute('label', documentId); 
+				cell5.setAttribute('hidden', true); 
+				
+				var newItem = document.createElement('listitem');
+				newItem.appendChild(cell0);
+				newItem.appendChild(cell1);
+				newItem.appendChild(cell2);
+				newItem.appendChild(cell3);
+				newItem.appendChild(cell4);
+				newItem.appendChild(cell5);
+				
+				// Set colors and tooltips.
+				if (e4xModule.@hasDefinitionFile.toString() == 'true')
 				{
-					newItem.style.color = 'red';
-					newItem.tooltipText = "&amp;modules.referencing.bo.general.File-is-updated;";
-				}
-				else
-				{
-					if (hasDocument)
+					if (e4xModule.@hasDefinitionFileChanged.toString() == 'true')
 					{
-						newItem.tooltipText = "&amp;modules.referencing.bo.general.Document-exists; &amp;modules.referencing.bo.general.File-exists;";
+						newItem.style.color = 'red';
+						newItem.tooltipText = "&amp;modules.referencing.bo.general.File-is-updated;";
 					}
 					else
 					{
-						newItem.tooltipText = "&amp;modules.referencing.bo.general.File-exists;";
+						if (hasDocument)
+						{
+							newItem.tooltipText = "&amp;modules.referencing.bo.general.Document-exists; &amp;modules.referencing.bo.general.File-exists;";
+						}
+						else
+						{
+							newItem.tooltipText = "&amp;modules.referencing.bo.general.File-exists;";
+						}
 					}
 				}
+				else if (hasDocument)
+				{
+					newItem.tooltipText = "&amp;modules.referencing.bo.general.Document-exists;";
+				}			
+				
+				listBox.appendChild(newItem);
 			}
-			else if (hasDocument)
+			
+			// Focus it.
+			listBox.focus();
+		]]></body>
+	</action>
+	<action name="editUrlRewriting">
+		<parameter name="package" />
+		<parameter name="documentId" />
+		<body><![CDATA[
+			var form = document.getElementById('modules_referencing_widget_urlRewritingForm');
+			
+			// detach the form from its attached component (generally a list)
+			// in order to make it independant
+			form.detach();
+				
+			// load the form for the requested document type
+			form.setAttribute('module', this.name);
+			form.setAttribute('document-type', 'urlrewritinginfo');
+				
+			form.reattach(false);
+			
+			if (documentId > 0)
 			{
-				newItem.tooltipText = "&amp;modules.referencing.bo.general.Document-exists;";
-			}			
-			
-			listBox.appendChild(newItem);
-		}
-		
-		// Focus it.
-		listBox.focus();
-	]]></body>
-  </action>
-  <action name="editUrlRewriting">
-    <parameter name="package"/>
-    <parameter name="documentId"/>
-    <body><![CDATA[
-		var form = document.getElementById("modules_"+this.name+"_widget_urlRewritingForm");
-		
-		// detach the form from its attached component (generally a list)
-		// in order to make it independant
-		form.detach();
-			
-		// load the form for the requested document type
-		form.setAttribute('module', this.name);
-		form.setAttribute('document-type', 'urlrewritinginfo');
-			
-		form.reattach(false);
-		
-		if (documentId > 0)
-		{
-			var documentLang = this.getContextLang();
-			wCore.debug('load documentId = '+documentId+', documentLang = '+documentLang);
-			form.callMethod('load', documentId, documentLang);
-		}
-		else
-		{
-			form.setAttribute('packageName', package);
-			form.callMethod('createNew'); 
-		}
-	]]></body>
-  </action>
-  <action name="editSelectedUrlRewriting">
-    <body><![CDATA[
-    	var listbox = this.getElementById('urlRewritingModuleList');
-    	var package = listbox.selectedItems[0].childNodes[1].getAttribute('label');
-    	var documentId = parseInt(listbox.selectedItems[0].childNodes[5].getAttribute('label'));
-		this.editUrlRewriting(package, documentId);
-    ]]></body>
-  </action>
-  
-<!-- Module's main layout -->
-  <action name="viewSitemap" icon="sitemap" label="&amp;modules.referencing.bo.general.SitemapManagement;" global="true">
-    <body><![CDATA[
-	  	this.appendToTitle(": %label% ".toLowerCase());
-  		this.viewLayout(0);
-  	]]></body>
-  </action>
-  
-<!--
-  <action name="viewIdFiles" icon="id" label="&amp;modules.referencing.bo.general.IdFilesManagement;" global="true">
-    <body><![CDATA[
-	  	this.appendToTitle(": %label% ".toLowerCase());
-  		this.viewLayout(1);
-  	]]></body>
-  </action>
--->
-  <action name="viewRedirections" icon="redirection" label="&amp;modules.referencing.bo.general.RedirectionsManagement;" global="true">
-    <body><![CDATA[
-	  	this.appendToTitle(": %label% ".toLowerCase());
-  		this.viewLayout(2);
-  	]]></body>
-  </action>
-<!--
-  <action name="viewRobotsTxt" icon="transmit" label="&amp;modules.referencing.bo.general.RobotsTxtManagement;" global="true">
-    <body><![CDATA[
-	  	this.appendToTitle(": %label% ".toLowerCase());
-  		this.viewLayout(3);
-  	]]></body>
-  </action>
--->
-  <action name="viewUrlRewriting" icon="urlrewriting" label="&amp;modules.referencing.bo.general.Url-rewriting-management;" global="true">
-    <body><![CDATA[
-	  	this.appendToTitle(": %label% ".toLowerCase());
-  		this.viewLayout(4);
-  	]]></body>
-  </action>
-
-  <action name="preEditPreferences" label="&amp;modules.referencing.bo.general.Settings;">
-    <body><![CDATA[
-    	this.appendToTitle(": %label% ".toLowerCase());
-    	this.viewLayout(5);
-    ]]></body>
-  </action>
-
-  <action name="viewLayout">
-    <parameter name="index"/>
-    <body><![CDATA[
-  		var deck = this.getElementById('contentDeck');
-  		if (deck.selectedIndex != index)
-  		{
-  			deck.selectedIndex = index;
-  			this.updateUI();
-  			return true;
-  		}  		
-  		return false;
-	]]></body>
-  </action>
-  <action name="updateUI">
-    <body><![CDATA[
-    	if (!this.currentWebsiteId)
-    	{
-    		return;
-    	}
-    	
-    	var selectedIndex = parseInt(this.getElementById('contentDeck').selectedIndex);
-    	if (selectedIndex < 1 || selectedIndex == NaN)
-    	{
-    		selectedIndex = 0;
-    	}
-    	wCore.debug('[referencing::updateUI] selected view = ' + selectedIndex);
-    	
-    	switch (selectedIndex)
-  		{
-  			// Engine ID
-  			case 1 :
-  				this.loadIdInfo();
-  				break;
-  			  			
-  			// Redirections
-  			case 2 :
-				var form = this.getElementById('redirectionsForm');
-				if ('website' in form._fields) 
-				{
-					form.getFieldByName('website').value = this.currentWebsiteId;
-				}
-				this.loadRedirectionList();
-  				break;
-  			
-  			// robots.txt
-  			case 3 :
-  				this.loadRobotsTxt();
-  				break;
-  			
-  			// URL rewriting
-  			case 4 :
-  				this.loadUrlRewritingModuleList();
-  				break;
-  			
-  			// Settings andd permissions
-  			case 5 :
-  				break;
-  				
-  			// Sitemap
-  			case 0 :
-  			default :
-  				this.loadUrlList(true);
-  				this.loadExcludedUrlList();
-  				break;
-  		} 
-	]]></body>
-  </action>
-  
-  <!-- Permissions and preferences -->
-  <!--
-	Specific version without document selection in any list or tree.
-	Automatically apply on referencing root folder.
-    -->
-  <action name="editModulePermissions" label="&amp;modules.uixul.bo.actions.Edit-permissions;" icon="rights-management" global="true">
-    <body><![CDATA[
-		this.appendToTitle(": %label% ".toLowerCase());
-  		this.viewLayout(5);
-		
-		// Get the root folder id.
-		var url = Context.W_HOST_PREFIX + Context.W_HOST + '/';
-		var request = new wServerRequest(url, 'post');
-		request.addParameter('module', 'referencing');
-		request.addParameter('action', 'GetRootFolderId');
-		
-		var _this = this;
-		request.setHandler(
-			function()
+				var documentLang = this.getContextLang();
+				wCore.debug('load documentId = '+documentId+', documentLang = '+documentLang);
+				form.callMethod('load', documentId, documentLang);
+			}
+			else
 			{
-				var xmlHttp = request.getXmlHttpRequest();
-				if(xmlHttp.readyState == 4 && xmlHttp.status == 200)
-				{
-					var xmlString = xmlHttp.responseText;
-					if (xmlString.indexOf('<?xml') == 0)
+				form.setAttribute('packageName', package);
+				form.callMethod('createNew'); 
+			}
+		]]></body>
+	</action>
+	<action name="editSelectedUrlRewriting">
+		<body><![CDATA[
+	    	var listbox = this.getElementById('urlRewritingModuleList');
+	    	var package = listbox.selectedItems[0].childNodes[1].getAttribute('label');
+	    	var documentId = parseInt(listbox.selectedItems[0].childNodes[5].getAttribute('label'));
+			this.editUrlRewriting(package, documentId);
+	    ]]></body>
+	</action>
+
+	<!-- Module's main layout -->
+	<action name="viewSitemap" icon="sitemap" label="&amp;modules.referencing.bo.general.SitemapManagement;" global="true">
+		<body><![CDATA[
+		  	this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(0);
+	  	]]></body>
+	</action>
+	<action name="viewRedirections" icon="redirection" label="&amp;modules.referencing.bo.general.RedirectionsManagement;" global="true">
+		<body><![CDATA[
+		  	this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(2);
+	  	]]></body>
+	</action>	
+	<action name="viewUrlRewriting" icon="urlrewriting" label="&amp;modules.referencing.bo.general.Url-rewriting-management;" global="true">
+		<body><![CDATA[
+		  	this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(4);
+	  	]]></body>
+	</action>
+	
+	<action name="viewLayout">
+		<parameter name="index" />
+		<body><![CDATA[
+	  		var deck = this.getElementById('contentDeck');
+	  		if (deck.selectedIndex != index)
+	  		{
+	  			deck.selectedIndex = index;
+	  			this.updateUI();
+	  			return true;
+	  		}  		
+	  		return false;
+		]]></body>
+	</action>
+	<action name="updateUI">
+		<body><![CDATA[
+	    	if (!this.currentWebsiteId)
+	    	{
+	    		return;
+	    	}
+	    	
+	    	var selectedIndex = parseInt(this.getElementById('contentDeck').selectedIndex);
+	    	if (selectedIndex < 1 || selectedIndex == NaN)
+	    	{
+	    		selectedIndex = 0;
+	    	}
+	    	wCore.debug('[referencing::updateUI] selected view = ' + selectedIndex);
+	    	
+	    	switch (selectedIndex)
+	  		{
+	  			// Redirections
+	  			case 2 :
+					var form = document.getElementById('modules_referencing_widget_redirectionsForm');
+					if ('website' in form._fields) 
 					{
-						xmlString = xmlString.substring(xmlString.indexOf('>')+1, xmlString.length);
+						form.getFieldByName('website').value = this.currentWebsiteId;
 					}
-					_this.doEditModulePermissions(new XML(xmlString));
-				}
-			}
-		);
-		request.send(true);
-	]]></body>
-  </action>
-  <action name="doEditModulePermissions" label="&amp;modules.uixul.bo.actions.Edit-permissions;" icon="rights-management">
-    <parameter name="e4x"/>
-    <body><![CDATA[
-		// Get the root folder id.
-		var documentId = e4x.id.toString();
-		var documentLang = this.getContextLang();
-		var form = document.getElementById("modules_"+this.name+"_widget_moduleForm");
+					this.loadRedirectionList();
+	  				break;
+	  			
+	  			// URL rewriting
+	  			case 4 :
+	  				this.loadUrlRewritingModuleList();
+	  				break;
+	  			
+	  			// Settings andd permissions
+	  			case 5 :
+	  				break;
+	  				
+	  			// Sitemap
+	  			case 0 :
+	  			default :
+	  				this.loadUrlList(true);
+	  				this.loadExcludedUrlList();
+	  				break;
+	  		} 
+		]]></body>
+	</action>
 
-		// detach the form from its attached component (generally a list)
-		// in order to make it independant
-		form.detach();
-
-		// load the form for the requested document type
-		form.setAttribute('module', this.name);
-		form.setAttribute('document-type', 'permission');
-		form.setAttribute('parent-id', documentId);
-		form.setAttribute('document-lang', documentLang);
-
-		form.loadActionName = 'LoadPermissions';
-		form.saveActionName = 'SavePermissions';
-		form.reattach(false);
-		form.callMethod('load', documentId, documentLang);
-	]]></body>
-  </action>
-  <action name="createUrlrewritinginfo" label="&amp;modules.referencing.bo.actions.Create-Urlrewritinginfo;">
-    <parameter name="listWidget"/>
-    <body><![CDATA[this.createDocument(listWidget, this.name, 'urlrewritinginfo', 'moduleForm');]]></body>
-  </action>
+	<!-- Permissions -->
+	<!--
+		Specific version without document selection in any list or tree.
+		Automatically apply on referencing root folder.
+    -->
+	<action name="editModulePermissions" label="&amp;modules.uixul.bo.actions.Edit-permissions;" icon="rights-management" global="true">
+		<body><![CDATA[
+			this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(5);
+			
+			// Get the root folder id.
+			var result = wCore.executeJSON('referencing', 'GetRootFolderId', {}, null, true);
+			var documentId = result['contents'].id;
+			var documentLang = this.getContextLang();
+			var form = document.getElementById('modules_referencing_widget_moduleForm');
+	
+			// detach the form from its attached component (generally a list)
+			// in order to make it independant
+			form.detach();
+	
+			// load the form for the requested document type
+			form.setAttribute('module', this.name);
+			form.setAttribute('document-type', 'permission');
+			form.setAttribute('parent-id', documentId);
+			form.setAttribute('document-lang', documentLang);
+	
+			form.loadActionName = 'LoadPermissions';
+			form.saveActionName = 'SavePermissions';
+			form.reattach(false);
+			form.callMethod('load', documentId, documentLang);
+		]]></body>
+	</action>
+	<action name="createUrlrewritinginfo" label="&amp;modules.referencing.bo.actions.Create-Urlrewritinginfo;">
+		<parameter name="listWidget" />
+		<body><![CDATA[
+			this.createDocument(listWidget, this.name, 'urlrewritinginfo', 'moduleForm');
+		]]></body>
+	</action>
 </actions>

@@ -15,7 +15,7 @@
 	<statuses default="ACTIVE" />
 	<form>
 		<property name="label" display="hidden" />
-		<property name="website" display="readonly" control-type="Text" multiple="false" />
+		<property name="website" display="readonly" control-type="text" multiple="false" />
 		<property name="oldUrl" size="100" />
 		<property name="newUrl" size="100" />
 	</form>
