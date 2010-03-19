@@ -34,13 +34,11 @@ class commands_GenerateSitemaps extends commands_AbstractChangeCommand
 		$websites = website_WebsiteService::getInstance()->createQuery()->find();
 		foreach ($websites as $website)
 		{
-			$this->message("Generate site map for ".$website->getDomain());
-			$rs->saveSitemapContents($website);
-			
-			$langs = ($website->getLocalizebypath()) ? 'all' : $website->getI18nInfo()->getLangs();
+			$langs = ($website->getLocalizebypath()) ? array('all') : $website->getI18nInfo()->getLangs();
 			foreach ($langs as $lang)
 			{
-				referencing_ReferencingService::getInstance()->saveSitemapContents($website, $lang);
+				$this->message("Generate site map for website ".$website->getId()." and lang ".$lang);
+				$rs->saveSitemapContents($website, $lang);
 			}	
 		}
 
