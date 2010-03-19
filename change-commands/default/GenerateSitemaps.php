@@ -27,11 +27,21 @@ class commands_GenerateSitemaps extends commands_AbstractChangeCommand
 		$this->message("== Generate sitemaps ==");
 
 		$this->loadFramework();
+		
+		$rs = referencing_ReferencingService::getInstance();
+		$rs->createStorageDirectory();
+			
 		$websites = website_WebsiteService::getInstance()->createQuery()->find();
 		foreach ($websites as $website)
 		{
 			$this->message("Generate site map for ".$website->getDomain());
-			referencing_ReferencingService::getInstance()->saveSitemapContents($website);	
+			$rs->saveSitemapContents($website);
+			
+			$langs = ($website->getLocalizebypath()) ? 'all' : $website->getI18nInfo()->getLangs();
+			foreach ($langs as $lang)
+			{
+				referencing_ReferencingService::getInstance()->saveSitemapContents($website, $lang);
+			}	
 		}
 
 		$this->okMessage("Site map files successfully generated");

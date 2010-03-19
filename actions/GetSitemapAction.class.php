@@ -7,9 +7,15 @@ class referencing_GetSitemapAction extends f_action_BaseAction
 	 */
 	public function _execute($context, $request)
 	{
-		$website = website_WebsiteModuleService::getInstance()->getCurrentWebsite();
+		$domain = $_SERVER['HTTP_HOST'];
+		$wsms = website_WebsiteModuleService::getInstance();
+		$websiteInfo  = $wsms->getWebsiteInfos($domain);
+		
+		$website = DocumentHelper::getDocumentInstance($websiteInfo['id'], 'modules_website/website');
+		$lang = $websiteInfo['localizebypath'] ? 'all' : f_util_ArrayUtils::firstElement($websiteInfo['langs']);
+		
 		$index = $request->getParameter('index', 0);
-		$contents = referencing_ReferencingService::getInstance()->getSitemapContents($website, $index);
+		$contents = referencing_ReferencingService::getInstance()->getSitemapContents($website, $lang, $index);
 		if ($contents !== null)
 		{
 			// Content is gzipped (URL rewriting rule in .htaccess points to sitemap.xml.gz).

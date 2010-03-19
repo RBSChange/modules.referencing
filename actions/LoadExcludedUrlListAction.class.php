@@ -8,8 +8,9 @@ class referencing_LoadExcludedUrlListAction extends f_action_BaseAction
 	public function _execute($context, $request)
 	{
 		$contents = referencing_ReferencingService::getInstance()->getSitemapExcludedUrlList(
-			DocumentHelper::getDocumentInstance($request->getParameter('websiteId'))
-			);
+			DocumentHelper::getDocumentInstance($request->getParameter('websiteId')),
+			$request->getParameter('forLang')
+		);
 		$request->setAttribute('contents', '<contents><![CDATA[' . $contents . ']]></contents>');
 	    return self::getSuccessView();
 	}

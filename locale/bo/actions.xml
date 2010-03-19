@@ -1,75 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <localization>
-  <entity id="saveRobotsTxt">
-    <locale lang="fr">enregistrement du fichier robots.txt</locale>
-    <locale lang="en">save robots.txt file</locale>
-    <locale lang="de">Speichervorgang der Datei robots.txt</locale>
-  </entity>
-  <entity id="loadRobotsTxt">
-    <locale lang="fr">chargement du fichier robots.txt</locale>
-    <locale lang="en">load robots.txt file</locale>
-    <locale lang="de">Ladevorgang der Datei robots.txt</locale>
-  </entity>
-  <entity id="Create-Redirection">
-    <locale lang="fr">créer une redirection</locale>
-    <locale lang="en">create redirection</locale>
-    <locale lang="de">eine Weiterleitung erstellen</locale>
-  </entity>
-  <entity id="Generate-redirections-file">
-    <locale lang="fr">Activer les redirections</locale>
-    <locale lang="en">Activate redirections</locale>
-    <locale lang="de">Weiterleitungen aktivieren</locale>
-  </entity>
-  <entity id="Download-redirections-as-csv">
-    <locale lang="fr">exporter les redirections</locale>
-    <locale lang="en">export redirections</locale>
-    <locale lang="de">Weiterleitungen exportieren</locale>
-  </entity>
-  <entity id="Upload-CSV-file">
-    <locale lang="fr">importer des redirections</locale>
-    <locale lang="en">import redirections</locale>
-    <locale lang="de">Weiterleitungen importieren</locale>
-  </entity>
-  <entity id="LoadExcludedUrlList">
-    <locale lang="fr">chargement de la liste des URLs exclues</locale>
-    <locale lang="en">load excluded URLs list</locale>
-    <locale lang="de">Ladevorgang der ausgeschlossenen URLliste</locale>
-  </entity>
-  <entity id="LoadUrlList">
-    <locale lang="fr">chargement de la liste des URLs</locale>
-    <locale lang="en">load URLs list</locale>
-    <locale lang="de">Ladevorgang der URLliste</locale>
-  </entity>
-  <entity id="GenerateSitemapFile">
-    <locale lang="fr">générer le fichier sitemap.xml</locale>
-    <locale lang="en">generate sitemap.xml file</locale>
-    <locale lang="de">Datei sitemap.xml generieren</locale>
-  </entity>
-  <entity id="LoadWebsiteList">
-    <locale lang="fr">chargement de la liste des sites web</locale>
-    <locale lang="en">loading websites list</locale>
-    <locale lang="de">Ladevorgang der Webseitenliste</locale>
-  </entity>
-  <entity id="LoadRedirectionList">
-    <locale lang="fr">chargement de la liste des redirections</locale>
-    <locale lang="en">loading redirections list</locale>
-    <locale lang="de">Ladevorgang der Weiterleitungsliste</locale>
-  </entity>
-  <entity id="SaveSitemapOptions">
-    <locale lang="fr">enregistrement des options pour le sitemap</locale>
-    <locale lang="en">saving sitemap options</locale>
-    <locale lang="de">Speichervorgang der Sitemapoptionen</locale>
-  </entity>
-  <entity id="GenerateSitemapFileConfirm">
-    <locale lang="fr">La mise à jour du fichier Sitemap peut prendre du temps en fonction de la volumétrie du site. Il est recommandé d'opter pour une mise à jour automatique et périodique du fichier, dans les préférences du module Référencement. Souhaitez-vous réellement continuer ?</locale>
-    <locale lang="en">The Sitemap file update may take a while, depending on the website's contents. It is recommended to choose an automated and periodic update. Do you really want to continue?</locale>
-    <locale lang="de">Die Aktualisierung der Datei Sitemap kann entsprechend der Webseitenvolumetrie einige Zeit in Anspruch nehmen. Es ist 
-	empfohlen eine automatische und periodische Aktualisierung der Datei in den Präferenzen des Moduls Referenzierung zu wählen. Möchten Sie 
-	wirklich fortfahren?</locale>
-  </entity>
-  <entity id="Create-Urlrewritinginfo">
-    <locale lang="fr">Create urlrewritinginfo</locale>
-    <locale lang="en">Create urlrewritinginfo</locale>
-    <locale lang="de">Create urlrewritinginfo</locale>
-  </entity>
+	<entity id="Create-Redirection">
+		<locale lang="fr">créer une redirection</locale>
+		<locale lang="en">create redirection</locale>
+		<locale lang="de">eine Weiterleitung erstellen</locale>
+	</entity>
+	<entity id="Generate-redirections-file">
+		<locale lang="fr">Activer les redirections</locale>
+		<locale lang="en">Activate redirections</locale>
+		<locale lang="de">Weiterleitungen aktivieren</locale>
+	</entity>
+	<entity id="Download-redirections-as-csv">
+		<locale lang="fr">exporter les redirections</locale>
+		<locale lang="en">export redirections</locale>
+		<locale lang="de">Weiterleitungen exportieren</locale>
+	</entity>
+	<entity id="Upload-CSV-file">
+		<locale lang="fr">importer des redirections</locale>
+		<locale lang="en">import redirections</locale>
+		<locale lang="de">Weiterleitungen importieren</locale>
+	</entity>
+	<entity id="LoadExcludedUrlList">
+		<locale lang="fr">chargement de la liste des URLs exclues</locale>
+		<locale lang="en">load excluded URLs list</locale>
+		<locale lang="de">Ladevorgang der ausgeschlossenen URLliste</locale>
+	</entity>
+	<entity id="LoadUrlList">
+		<locale lang="fr">chargement de la liste des URLs</locale>
+		<locale lang="en">load URLs list</locale>
+		<locale lang="de">Ladevorgang der URLliste</locale>
+	</entity>
+	<entity id="GenerateSitemapFile">
+		<locale lang="fr">générer le fichier sitemap.xml</locale>
+		<locale lang="en">generate sitemap.xml file</locale>
+		<locale lang="de">Datei sitemap.xml generieren</locale>
+	</entity>
+	<entity id="LoadWebsiteList">
+		<locale lang="fr">chargement de la liste des sites web</locale>
+		<locale lang="en">loading websites list</locale>
+		<locale lang="de">Ladevorgang der Webseitenliste</locale>
+	</entity>
+	<entity id="LoadRedirectionList">
+		<locale lang="fr">chargement de la liste des redirections</locale>
+		<locale lang="en">loading redirections list</locale>
+		<locale lang="de">Ladevorgang der Weiterleitungsliste</locale>
+	</entity>
+	<entity id="SaveSitemapOptions">
+		<locale lang="fr">enregistrement des options pour le sitemap</locale>
+		<locale lang="en">saving sitemap options</locale>
+		<locale lang="de">Speichervorgang der Sitemapoptionen</locale>
+	</entity>
+	<entity id="GenerateSitemapFileConfirm">
+		<locale lang="fr">La mise à jour du fichier Sitemap peut prendre du temps en fonction de la volumétrie du site. Il est recommandé d'opter pour une mise à jour automatique et périodique du fichier, dans les préférences du module Référencement. Souhaitez-vous réellement continuer ?</locale>
+		<locale lang="en">The Sitemap file update may take a while, depending on the website's contents. It is recommended to choose an automated and periodic update. Do you really want to continue?</locale>
+		<locale lang="de">Die Aktualisierung der Datei Sitemap kann entsprechend der Webseitenvolumetrie einige Zeit in Anspruch nehmen. Es ist empfohlen eine automatische und periodische Aktualisierung der Datei in den Präferenzen des Moduls Referenzierung zu wählen. Möchten Sie wirklich fortfahren?</locale>
+	</entity>
 </localization>

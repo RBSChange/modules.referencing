@@ -80,137 +80,51 @@ class referencing_ReferencingService extends BaseService
 	
 	///////////////////////////////////////////////////////////////////////////
 	//                                                                       //
-	// robots.txt management                                                 //
-	//                                                                       //
-	///////////////////////////////////////////////////////////////////////////
-	
-
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @param String $contents
-	 */
-	public function saveRobotsTxtContents($website, $contents)
-	{
-		// Update the document in the database.
-		$doc = $this->getInfoDocumentForWebsite($website, true);
-		$doc->setRobotsTxt($contents);
-		$doc->save();
-		
-		// Update the file in seo directory.
-		f_util_FileUtils::write($this->getRobotsTxtPathForWebsite($website), $contents, f_util_FileUtils::OVERRIDE);
-	}
-	
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @return String
-	 */
-	private function getRobotsTxtPathForWebsite($website)
-	{
-		return $this->getStorageDirectory() . DIRECTORY_SEPARATOR . 'robots-' . $website->getId() . '.txt';
-	}
-	
-	/**
-	 * @return String
-	 */
-	private function getDefaultRobotsTxtContent()
-	{
-		$filePath = FileResolver::getInstance()->setPackageName('modules_referencing')->setDirectory('lib')->getPath('default-robots.txt');
-		try
-		{
-			return f_util_FileUtils::read($filePath);
-		}
-		catch (FileNotFoundException $e)
-		{
-			Framework::warn(__METHOD__ . ' EXCEPTION for path "' . $filePath . '": ' . $e->getMessage());
-			return '';
-		}
-	}
-	
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @param Boolean $useDefaultIfEmpty if set to true and there is no content defined in the database, the contents are loaded from the default-robots.txt file.
-	 * @return String $contents
-	 */
-	public function getRobotsTxtContents($website, $useDefaultIfEmpty = true)
-	{
-		$content = '';
-		
-		// First look for a document.
-		$doc = $this->getInfoDocumentForWebsite($website);
-		if (! is_null($doc))
-		{
-			$content = $doc->getRobotsTxt();
-		}
-		
-		// Next look for the default file.
-		if ($content == '' && $useDefaultIfEmpty)
-		{
-			$content = $this->getDefaultRobotsTxtContent();
-		}
-		
-		return $content;
-	}
-	
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @return String $contents
-	 */
-	public function getRobotsTxtContentsFromDisk($website)
-	{
-		try
-		{
-			return f_util_FileUtils::read($this->getRobotsTxtPathForWebsite($website));
-		}
-		catch (FileNotFoundException $e)
-		{
-			Framework::warn(__METHOD__ . ' EXCEPTION: ' . $e->getMessage());
-			return '';
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	//                                                                       //
 	// sitemap.xml management                                                //
 	//                                                                       //
 	///////////////////////////////////////////////////////////////////////////
 	
-
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param Integer $siteMapIndex
 	 * @return String
 	 */
-	private function getSitemapPathForWebsite($website, $siteMapIndex = 0)
+	private function getSitemapPathForWebsite($website, $forLang, $siteMapIndex = 0)
 	{
-		return $this->getStorageDirectory() . DIRECTORY_SEPARATOR . 'sitemap-' . $website->getId() . '-' . $siteMapIndex . '.xml.gz';
+		return $this->getStorageDirectory() . DIRECTORY_SEPARATOR . 'sitemap-' . $website->getId() . '-' . $forLang . '-' . $siteMapIndex . '.xml.gz';
 	}
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param Integer $siteMapIndex
 	 * @return String
 	 */
-	private function getSitemapIndexPathForWebsite($website, $siteMapIndex = 0)
+	private function getSitemapIndexPathForWebsite($website, $forLang, $siteMapIndex = 0)
 	{
-		return $this->getStorageDirectory() . DIRECTORY_SEPARATOR . 'sitemap-index-' . $website->getId() . '-' . $siteMapIndex . '.xml.gz';
+		return $this->getStorageDirectory() . DIRECTORY_SEPARATOR . 'sitemap-index-' . $website->getId() . '-' . $forLang . '-' . $siteMapIndex . '.xml.gz';
 	}
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param unknown_type $index
 	 */
-	private function getSitemapUrl($website, $index)
+	private function getSitemapUrl($website, $forLang, $index)
 	{
-		return $website->getUrl() . DIRECTORY_SEPARATOR . 'sitemap' . $index . '.xml.gz';
+		$websiteUrl = ($forLang !== 'all') ? $website->getUrlForLang($forLang) : $website->getUrl();
+		return $websiteUrl . DIRECTORY_SEPARATOR . 'sitemap' . $index . '.xml.gz';
 	}
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @return String
 	 */
-	public function getSitemapExcludedUrlList($website)
+	public function getSitemapExcludedUrlList($website, $forLang)
 	{
-		$doc = $this->getInfoDocumentForWebsite($website);
+		$doc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang);
 		if ($doc !== null)
 		{
 			return $doc->getSitemapExcludedUrl();
@@ -220,28 +134,34 @@ class referencing_ReferencingService extends BaseService
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param Boolean $createIfNeeded
 	 * @return referencing_persistentdocument_websiteinfo
 	 */
-	private function getInfoDocumentForWebsite($website, $createIfNeeded = false)
+	private function getInfoDocumentForWebsiteAndLang($website, $forLang, $createIfNeeded = false)
 	{
 		$wis = referencing_WebsiteinfoService::getInstance();
-		$doc = $wis->createQuery()->add(Restrictions::eq('website.id', $website->getId()))->findUnique();
-		if ($createIfNeeded && is_null($doc))
+		$forLang = $website->getLocalizebypath() ? 'all' : $forLang;
+		
+		$doc = $wis->createQuery()->add(Restrictions::eq('website', $website))
+			->add(Restrictions::eq('forLang', $forLang))->findUnique();
+		if ($createIfNeeded && $doc === null)
 		{
 			$doc = $wis->getNewDocumentInstance();
 			$doc->setWebsite($website);
+			$doc->setForLang($forLang);
 		}
 		return $doc;
 	}
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param String $contents
 	 */
-	public function saveSitemapExcludedUrlList($website, $contents)
+	public function saveSitemapExcludedUrlList($website, $forLang, $contents)
 	{
-		$doc = $this->getInfoDocumentForWebsite($website, true);
+		$doc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang, true);
 		$doc->setSitemapExcludedUrl($contents);
 		$doc->save();
 	}
@@ -265,11 +185,12 @@ class referencing_ReferencingService extends BaseService
 	 * Returns an array containing the URLs of all the pages in the given website.
 	 *
 	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @param String $modelName
 	 * @param Boolean $includeExcludedUrl
 	 * @return Array<referencing_UrlInfo>
 	 */
-	public function getUrlInfoArray($website, $modelName = null, $includeExcludedUrl = false, $maxUrls = -1)
+	public function getUrlInfoArray($website, $forLang, $modelName = null, $includeExcludedUrl = false, $maxUrls = -1)
 	{
 		website_WebsiteModuleService::getInstance()->setCurrentWebsite($website);
 		if (is_null($modelName))
@@ -283,7 +204,7 @@ class referencing_ReferencingService extends BaseService
 		$urlInfoArray = array();		
 		foreach ($models as $model)
 		{
-			$this->appendModelToUrlInfoArray($website, $model, $urlInfoArray, $includeExcludedUrl, $maxUrls);
+			$this->appendModelToUrlInfoArray($website, $forLang, $model, $urlInfoArray, $includeExcludedUrl, $maxUrls);
 		}
 		return $urlInfoArray;
 	}
@@ -354,8 +275,14 @@ class referencing_ReferencingService extends BaseService
 		return $result[0]['rowcount'] > 0;
 	}
 	
+	/**
+	 * @var Array<String, Boolean>
+	 */
 	private $exludedModels = null;
 	
+	/**
+	 * @return Array<String, Boolean>
+	 */
 	private function getExludedModels()
 	{
 		if ($this->exludedModels === null)
@@ -385,14 +312,16 @@ class referencing_ReferencingService extends BaseService
 	private function buildDocumentIds($website, $model, $maxUrl)
 	{
 		$documentService = $model->getDocumentService();
-		if(f_util_ClassUtils::methodExists($documentService, 'getIdsForSitemap'))
+		if (f_util_ClassUtils::methodExists($documentService, 'getIdsForSitemap'))
 		{
 			$resultArray = $documentService->getIdsForSitemap($website, $maxUrl);		
 		}
 		else
 		{
 			$resultArray = array();
-			$query = $model->getDocumentService()->createQuery()->add(Restrictions::published())->add(Restrictions::eq('model', $model->getName()))->setProjection(Projections::property('id'));
+			$query = $model->getDocumentService()->createQuery()
+				->add(Restrictions::published())->add(Restrictions::eq('model', $model->getName()))
+				->setProjection(Projections::property('id'));
 			
 			if ($maxUrl > 0)
 			{
@@ -418,7 +347,7 @@ class referencing_ReferencingService extends BaseService
 						$resultArray = $query->findColumn('id');
 					}
 				}
-			}		
+			}
 		}
 		
 		return $resultArray;
@@ -426,42 +355,59 @@ class referencing_ReferencingService extends BaseService
 	
 	/**
 	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @param f_persistentdocument_PersistentDocumentModel $model
 	 * @param Array<referencing_UrlInfo> $urlInfoArray
 	 * @param Boolean $includeExcludedUrl
-	 *
 	 */
-	private function appendModelToUrlInfoArray($website, $model, &$urlInfoArray, $includeExcludedUrl, $maxUrl)
+	private function appendModelToUrlInfoArray($website, $forLang, $model, &$urlInfoArray, $includeExcludedUrl, $maxUrl)
 	{
-		$resultArray = $this->buildDocumentIds($website, $model, $maxUrl);
-		
-		$modelPriority = $this->getSitemapOption($website, $model->getName(), self::SITEMAP_PRIORITY);
-		$modelChangefreq = $this->getSitemapOption($website, $model->getName(), self::SITEMAP_CHANGEFREQ);
-		foreach ($resultArray as $result)
+		$rqc = RequestContext::getInstance();
+		$langs = ($forLang == 'all') ? $website->getI18nInfo()->getLangs() : array($forLang);
+
+		$modelPriority = $this->getSitemapOption($website, $forLang, $model->getName(), self::SITEMAP_PRIORITY);
+		$modelChangefreq = $this->getSitemapOption($website, $forLang, $model->getName(), self::SITEMAP_CHANGEFREQ);
+		foreach ($langs as $lang)
 		{
-			$doc = DocumentHelper::getDocumentInstance($result);
-			// Cas particulier des pages de détail :
-			// Si une page a un tag 'functional_*', alors elle ne doit pas figurer dans
-			// la liste des URLs du site car la page n'est qu'un "support" pour un autre
-			// document, et c'est ce document qui a une URL.
-			if ($this->isAllowedInSitemap($doc))
+			try 
 			{
-				$url = LinkHelper::getDocumentUrl($doc);
-				$isUrlExcluded = $this->isUrlExcludedInWebsite($url, $website);
-				if (! $isUrlExcluded || $includeExcludedUrl)
+				$rqc->beginI18nWork($lang);
+				
+				$resultArray = $this->buildDocumentIds($website, $model, $maxUrl);						
+				foreach ($resultArray as $result)
 				{
-					$urlInfo = new referencing_UrlInfo();
-					$urlInfo->loc = $url;
-					$urlInfo->lastmod = date('c', date_Calendar::getInstance($doc->getModificationDate())->getTimestamp());
-					$urlInfo->isExcluded = $isUrlExcluded;
-					$urlPriority = $this->getSitemapOptionForUrl($website, $url, self::SITEMAP_PRIORITY);
-					$urlChangefreq = $this->getSitemapOptionForUrl($website, $url, self::SITEMAP_CHANGEFREQ);
-					$urlInfo->priority = is_null($urlPriority) ? $modelPriority : $urlPriority;
-					$urlInfo->changefreq = is_null($urlChangefreq) ? $modelChangefreq : $urlChangefreq;
-					$urlInfoArray[] = $urlInfo;
+					$doc = DocumentHelper::getDocumentInstance($result);
+					// Cas particulier des pages de détail :
+					// Si une page a un tag 'functional_*', alors elle ne doit pas figurer dans
+					// la liste des URLs du site car la page n'est qu'un "support" pour un autre
+					// document, et c'est ce document qui a une URL.
+					if ($this->isAllowedInSitemap($doc))
+					{
+						$url = LinkHelper::getDocumentUrl($doc, $lang);
+						$isUrlExcluded = $this->isUrlExcludedInWebsite($url, $website, $forLang);
+						if (!$isUrlExcluded || $includeExcludedUrl)
+						{
+							$urlInfo = new referencing_UrlInfo();
+							$urlInfo->loc = $url;
+							$urlInfo->lastmod = date('c', date_Calendar::getInstance($doc->getModificationDate())->getTimestamp());
+							$urlInfo->isExcluded = $isUrlExcluded;
+							$urlPriority = $this->getSitemapOptionForUrl($website, $forLang, $url, self::SITEMAP_PRIORITY);
+							$urlChangefreq = $this->getSitemapOptionForUrl($website, $forLang, $url, self::SITEMAP_CHANGEFREQ);
+							$urlInfo->priority = ($urlPriority === null) ? $modelPriority : $urlPriority;
+							$urlInfo->changefreq = ($urlChangefreq === null) ? $modelChangefreq : $urlChangefreq;
+							$urlInfoArray[] = $urlInfo;
+						}
+					}
+					$doc = null;
 				}
+			
+				$rqc->endI18nWork();
 			}
-			$doc = null;
+			catch (Exception $e)
+			{
+				$rqc->endI18nWork();
+				throw $e;
+			}
 		}
 	}
 	
@@ -505,14 +451,15 @@ class referencing_ReferencingService extends BaseService
 	/**
 	 * @param String $url
 	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @return Boolean
 	 */
-	private function isUrlExcludedInWebsite($urlToCheck, $website)
+	private function isUrlExcludedInWebsite($urlToCheck, $website, $forLang)
 	{
 		$websiteId = $website->getId();
 		if (! isset($this->excludedUrl[$websiteId]))
 		{
-			$this->excludedUrl[$websiteId] = explode("\n", $this->getSitemapExcludedUrlList($website));
+			$this->excludedUrl[$websiteId] = explode("\n", $this->getSitemapExcludedUrlList($website, $forLang));
 			foreach ($this->excludedUrl[$websiteId] as &$url)
 			{
 				$url = trim($url);
@@ -523,64 +470,85 @@ class referencing_ReferencingService extends BaseService
 	
 	/**
 	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @return void
 	 */
-	public function saveSitemapContents($website)
+	public function saveSitemapContents($website, $forLang)
 	{
-		$this->createStorageDirectory();
-		
-		$docIds = $this->getDocumentIdsForWebsite($website);
-		$docIdCount = count($docIds);
 		$siteMaps = array();
 		$siteMapIndex = 0;
 		
-		for($i = 0; $i < $docIdCount; $i += self::MAX_URL_PER_FILE)
+		$rqc = RequestContext::getInstance();
+		$langs = ($forLang == 'all') ? $website->getI18nInfo()->getLangs() : array($forLang);
+		foreach ($langs as $lang)
 		{
-			$tmpFile = f_util_FileUtils::getTmpFile('smurl' . $siteMapIndex . '_');
-			file_put_contents($tmpFile, '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
-			$chunks = array_chunk(array_slice($docIds, $i, self::MAX_URL_PER_FILE), 500);
-			$nChunks = count($chunks);
-			$index = 1;
-			foreach ($chunks as $chunk)
+			try 
 			{
-				Framework::info("processing chunk " . $index ++ . " out of " . $nChunks . " for " . $tmpFile);
-				$batch = f_util_FileUtils::buildWebeditPath('modules', 'referencing', 'bin', 'generateSitemap.php');
-				$processHandle = popen("php $batch " . WEBEDIT_HOME . " " . RequestContext::getInstance()->getLang() . " " . $website->getId() . " " . $tmpFile . " " . implode(" ", $chunk), "r");
-				while (($string = fread($processHandle, 1000)) != false)
+				$rqc->beginI18nWork($lang);
+		
+				$docIds = $this->getDocumentIdsForWebsite($website);
+				$docIdCount = count($docIds);
+				
+				for ($i = 0; $i < $docIdCount; $i += self::MAX_URL_PER_FILE)
 				{
-					Framework::info($string);
+					$tmpFile = f_util_FileUtils::getTmpFile('smurl' . $siteMapIndex . '_');
+					file_put_contents($tmpFile, '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
+					$chunks = array_chunk(array_slice($docIds, $i, self::MAX_URL_PER_FILE), 500);
+					$nChunks = count($chunks);
+					$index = 1;
+					foreach ($chunks as $chunk)
+					{
+						Framework::info("processing chunk " . $index ++ . " out of " . $nChunks . " for " . $tmpFile);
+						$batch = f_util_FileUtils::buildWebeditPath('modules', 'referencing', 'bin', 'generateSitemap.php');
+						$processHandle = popen("php $batch " . WEBEDIT_HOME . " " . RequestContext::getInstance()->getLang() . " " . $website->getId() . " " . $tmpFile . " " . implode(" ", $chunk), "r");
+						while (($string = fread($processHandle, 1000)) != false)
+						{
+							Framework::info($string);
+						}
+						pclose($processHandle);
+					}
+					file_put_contents($tmpFile, "\n</urlset>", FILE_APPEND);
+					
+					$this->compressFile($tmpFile, $this->getSitemapPathForWebsite($website, $forLang, $siteMapIndex));
+					unlink($tmpFile);
+					
+					$siteMaps[] = array('url' => $this->getSitemapUrl($website, $siteMapIndex), 'lastMod' => date('c', time()));
+					$siteMapIndex++;
 				}
-				pclose($processHandle);
+		
+				$rqc->endI18nWork();
 			}
-			file_put_contents($tmpFile, "\n</urlset>", FILE_APPEND);
-			
-			$this->compressFile($tmpFile, $this->getSitemapPathForWebsite($website, $siteMapIndex));
-			unlink($tmpFile);
-			
-			$siteMaps[] = array('url' => $this->getSitemapUrl($website, $siteMapIndex), 'lastMod' => date('c', time()));
-			$siteMapIndex ++;
+			catch (Exception $e)
+			{
+				$rqc->endI18nWork();
+				throw $e;
+			}
 		}
 		
 		// Generate the sitemap index.
 		$templateIndex = TemplateLoader::getInstance()->setPackageName('modules_referencing')->setMimeContentType('xml')->load('sitemap-index');
 		
 		$siteMapsCount = count($siteMaps);
-		Framework::info("$siteMapsCount generated url sitemap files.");
+		Framework::info(__METHOD__ . " $siteMapsCount generated url sitemap files.");
 		
 		$siteMapIndex = 0;
 		for($i = 0; $i < $siteMapsCount; $i += self::MAX_URL_PER_INDEX_FILE)
 		{
-			Framework::info("generating index file $siteMapIndex ");
+			Framework::info(__METHOD__ . ' Generating index file $siteMapIndex');
 			$subSiteMaps = array_slice($siteMaps, $i, self::MAX_URL_PER_INDEX_FILE);
 			$templateIndex->setAttribute('sitemaps', $subSiteMaps);
-			$filePath = $this->getSitemapIndexPathForWebsite($website, $siteMapIndex);
+			$filePath = $this->getSitemapIndexPathForWebsite($website, $forLang, $siteMapIndex);
 			// Content is gzipped (URL rewriting rule in .htaccess points to sitemap.xml.gz).
-			Framework::info("Saving index file $filePath");
+			Framework::info(__METHOD__ . " Saving index file $filePath");
 			f_util_FileUtils::write($filePath, gzencode($templateIndex->execute()), f_util_FileUtils::OVERRIDE);
 			$siteMapIndex ++;
 		}
 	}
 	
+	/**
+	 * @param unknown_type $source
+	 * @param unknown_type $dest
+	 */
 	private function compressFile($source, $dest)
 	{
 		Framework::info(__METHOD__ . " from $source to $dest");
@@ -602,6 +570,11 @@ class referencing_ReferencingService extends BaseService
 		}
 	}
 	
+	/**
+	 * @param unknown_type $filerc
+	 * @param website_persistentdoculent_website $website
+	 * @param Integer[] $docIds
+	 */
 	public function updateTempSiteMap($filerc, $website, $docIds)
 	{
 		foreach ($docIds as $id)
@@ -653,12 +626,14 @@ class referencing_ReferencingService extends BaseService
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param Integer $siteMapIndex
 	 * @return String gzipped sitemap contents | null if the map does not exists
 	 */
-	public function getSitemapContents($website, $siteMapIndex = 0)
+	public function getSitemapContents($website, $forLang, $siteMapIndex = 0)
 	{
-		$path = $this->getSitemapPathForWebsite($website, $siteMapIndex);
+		$path = $this->getSitemapPathForWebsite($website, $forLang, $siteMapIndex);
+		if (Framework::isInfoEnabled()) { Framework::info(__METHOD__ . "($path)"); }
 		if (file_exists($path))
 		{
 			return f_util_FileUtils::read($path);
@@ -668,13 +643,14 @@ class referencing_ReferencingService extends BaseService
 	
 	/**
 	 * @param website_persistentdocument_website $website
+	 * @param String $forLang
 	 * @param Integer $siteMapIndex
 	 * @return String gzipped sitemap contents | null if the map does not exists
 	 */
-	public function getSitemapIndexContents($website, $siteMapIndex = 0)
+	public function getSitemapIndexContents($website, $forLang, $siteMapIndex = 0)
 	{
-		$path = $this->getSitemapIndexPathForWebsite($website, $siteMapIndex);
-		Framework::info(__METHOD__ . "($path)");
+		$path = $this->getSitemapIndexPathForWebsite($website, $forLang, $siteMapIndex);
+		if (Framework::isInfoEnabled()) { Framework::info(__METHOD__ . "($path)"); }
 		if (file_exists($path))
 		{
 			return f_util_FileUtils::read($path);
@@ -702,26 +678,27 @@ class referencing_ReferencingService extends BaseService
 		return 'contextual_website_website_modules_' . $model->getOriginalModuleName() . '_page-' . $type;
 	}
 	
-	private $sitemapOptionsPerWebsite;
+	private $sitemapOptionsPerWebsiteAndLang;
 	
 	/**
-	 * @param unknown_type $website
-	 * @param unknown_type $modelName
-	 * @param unknown_type $optionName
+	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
+	 * @param String $modelName
+	 * @param String $optionName
 	 * @return String
 	 */
-	public function getSitemapOption($website, $modelName, $optionName)
+	public function getSitemapOption($website, $forLang, $modelName, $optionName)
 	{
 		$websiteId = $website->getId();
-		if (! isset($this->sitemapOptionsPerWebsite[$websiteId]))
+		if (!isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang]))
 		{
-			$infoDoc = $this->getInfoDocumentForWebsite($website);
-			if (! is_null($infoDoc))
+			$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang);
+			if ($infoDoc !== null)
 			{
-				$this->sitemapOptionsPerWebsite[$websiteId] = unserialize($infoDoc->getSitemapOptions());
+				$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapOptions());
 			}
 		}
-		$sitemapOptions = &$this->sitemapOptionsPerWebsite[$websiteId];
+		$sitemapOptions = &$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang];
 		
 		if (is_array($sitemapOptions) && isset($sitemapOptions[$modelName]) && isset($sitemapOptions[$modelName][$optionName]))
 		{
@@ -731,31 +708,31 @@ class referencing_ReferencingService extends BaseService
 	}
 	
 	/**
-	 * @param String $website
+	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @param String $modelName
 	 * @param String $optionName
 	 * @param String $value
 	 * @param Boolean $save
-	 * @return String
 	 */
-	public function setSitemapOption($website, $modelName, $optionName, $value, $save = true)
+	public function setSitemapOption($website, $forLang, $modelName, $optionName, $value, $save = true)
 	{
-		$infoDoc = $this->getInfoDocumentForWebsite($website, true);
+		$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang, true);
 		$websiteId = $website->getId();
-		if (! isset($this->sitemapOptionsPerWebsite[$websiteId]))
+		if (!isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang]))
 		{
-			if (! is_null($infoDoc))
+			if ($infoDoc !== null)
 			{
-				$this->sitemapOptionsPerWebsite[$websiteId] = unserialize($infoDoc->getSitemapOptions());
+				$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapOptions());
 			}
 		}
-		$sitemapOptions = &$this->sitemapOptionsPerWebsite[$websiteId];
+		$sitemapOptions = &$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang];
 		
-		if (! is_array($sitemapOptions))
+		if (!is_array($sitemapOptions))
 		{
 			$sitemapOptions = array();
 		}
-		if (! isset($sitemapOptions[$modelName]))
+		if (!isset($sitemapOptions[$modelName]))
 		{
 			$sitemapOptions[$modelName] = array();
 		}
@@ -767,26 +744,30 @@ class referencing_ReferencingService extends BaseService
 		}
 	}
 	
-	private $sitemapUrlInfoPerWebsite;
+	/**
+	 * @var Array<String, Array>
+	 */
+	private $sitemapUrlInfoPerWebsiteAndLang;
 	
 	/**
-	 * @param unknown_type $website
-	 * @param unknown_type $modelName
-	 * @param unknown_type $optionName
+	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
+	 * @param String $modelName
+	 * @param String $optionName
 	 * @return String
 	 */
-	public function getSitemapOptionForUrl($website, $url, $optionName)
+	public function getSitemapOptionForUrl($website, $forLang, $url, $optionName)
 	{
 		$websiteId = $website->getId();
-		if (! isset($this->sitemapUrlInfoPerWebsite[$websiteId]))
+		if (! isset($this->sitemapUrlInfoPerWebsite[$websiteId.'/'.$forLang]))
 		{
-			$infoDoc = $this->getInfoDocumentForWebsite($website);
+			$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang);
 			if (! is_null($infoDoc))
 			{
-				$this->sitemapUrlInfoPerWebsite[$websiteId] = unserialize($infoDoc->getSitemapUrlInfo());
+				$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapUrlInfo());
 			}
 		}
-		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsite[$websiteId];
+		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang];
 		
 		if (is_array($sitemapUrlInfo) && isset($sitemapUrlInfo[$url]) && isset($sitemapUrlInfo[$url][$optionName]))
 		{
@@ -796,25 +777,25 @@ class referencing_ReferencingService extends BaseService
 	}
 	
 	/**
-	 * @param String $website
+	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @param String $modelName
 	 * @param String $optionName
 	 * @param String $value
 	 * @param Boolean $save
-	 * @return String
 	 */
-	public function setSitemapOptionForUrl($website, $url, $optionName, $value, $save = true)
+	public function setSitemapOptionForUrl($website, $forLang, $url, $optionName, $value, $save = true)
 	{
-		$infoDoc = $this->getInfoDocumentForWebsite($website, true);
+		$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang, true);
 		$websiteId = $website->getId();
-		if (! isset($this->sitemapUrlInfoPerWebsite[$websiteId]))
+		if (! isset($this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang]))
 		{
 			if (! is_null($infoDoc))
 			{
-				$this->sitemapUrlInfoPerWebsite[$websiteId] = unserialize($infoDoc->getSitemapUrlInfo());
+				$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapUrlInfo());
 			}
 		}
-		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsite[$websiteId];
+		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang];
 		
 		if (! is_array($sitemapUrlInfo))
 		{
@@ -890,73 +871,6 @@ class referencing_ReferencingService extends BaseService
 		foreach (website_WebsiteService::getInstance()->createQuery()->find() as $website)
 		{
 			$this->saveSitemapContents($website);
-		}
-	}
-	
-	///////////////////////////////////////////////////////////////////////////
-	//                                                                       //
-	// IDs management                                                        //
-	//                                                                       //
-	///////////////////////////////////////////////////////////////////////////
-	
-
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @return array<String=>Array<String=>String>>
-	 * @example
-	 *   [
-	 *     'yahoo' => [ 'id' => '1234567', 'content => '4e487dda' ],
-	 *     'google' => [ 'id' => '111da4567', 'content => '' ],
-	 *     'msn' => [ 'id' => '', 'content' => '<users><user>1245984</user></users>' ]
-	 *   ]
-	 */
-	public function getIdInfo($website)
-	{
-		$infoDoc = $this->getInfoDocumentForWebsite($website);
-		if (! is_null($infoDoc))
-		{
-			return unserialize($infoDoc->getEngineIdInfo());
-		}
-		return array();
-	}
-	
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @param String $engine
-	 * @param String $id
-	 * @return String or null
-	 */
-	public function getIdContentForEngineAndId($website, $engine, $id)
-	{
-		$infoDoc = $this->getInfoDocumentForWebsite($website);
-		if (! is_null($infoDoc))
-		{
-			$info = unserialize($infoDoc->getEngineIdInfo());
-			//echo "**<br />"; var_dump($info); echo "<br />**\n";
-			if (isset($info[$engine]) && isset($info[$engine]['id']) && $info[$engine]['id'] == $id && isset($info[$engine]['content']))
-			{
-				return $info[$engine]['content'];
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @param website_persistentdocument_website $website
-	 * @param String $engine
-	 * @param String $id
-	 * @param Boolean $save
-	 * @return array<String=>String>
-	 */
-	public function setIdInfo($website, $engine, $id, $content, $save = true)
-	{
-		$infoDoc = $this->getInfoDocumentForWebsite($website, true);
-		$info = unserialize($infoDoc->getEngineIdInfo());
-		$info[$engine] = array('id' => $id, 'content' => $content);
-		$infoDoc->setEngineIdInfo(serialize($info));
-		if ($save)
-		{
-			$infoDoc->save();
 		}
 	}
 }

@@ -7,10 +7,15 @@ class referencing_GetSitemapIndexAction extends referencing_Action
 	 */
 	public function _execute($context, $request)
 	{
-		$website = website_WebsiteModuleService::getInstance()->getCurrentWebsite();
+		$domain = $_SERVER['HTTP_HOST'];
+		$wsms = website_WebsiteModuleService::getInstance();
+		$websiteInfo  = $wsms->getWebsiteInfos($domain);
+		
+		$website = DocumentHelper::getDocumentInstance($websiteInfo['id'], 'modules_website/website');
+		$lang = $websiteInfo['localizebypath'] ? 'all' : f_util_ArrayUtils::firstElement($websiteInfo['langs']);
+		
 		$index = $request->getParameter('index', 0);
-		Framework::info(__METHOD__ . ":" . $website->__toString() . ":". $index);
-		$contents = referencing_ReferencingService::getInstance()->getSitemapIndexContents($website, $index);
+		$contents = referencing_ReferencingService::getInstance()->getSitemapIndexContents($website, $lang, $index);
 		if ($contents !== null)
 		{
 			// Content is gzipped (URL rewriting rule in .htaccess points to sitemap_index.xml.gz).
@@ -20,7 +25,7 @@ class referencing_GetSitemapIndexAction extends referencing_Action
 		}
 		else
 		{
-			$HTTP_Header= new HTTP_Header();
+			$HTTP_Header = new HTTP_Header();
 			$HTTP_Header->sendStatusCode(404);
 			die();
 		}

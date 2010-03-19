@@ -1,74 +1,192 @@
 <?xml version="1.0"?>
-<actions extends="generic">
-	<!-- websites list -->
+<actions extends="generic">	
+	<!-- Global module methods -->
+	<action name="viewLayout">
+		<parameter name="index" />
+		<body><![CDATA[
+	  		var deck = this.getElementById('contentDeck');
+	  		if (deck.selectedIndex != index)
+	  		{
+	  			deck.selectedIndex = index;
+	  			this.updateUI();
+	  			return true;
+	  		}  		
+	  		return false;
+		]]></body>
+	</action>	
+	<action name="viewSitemap" icon="sitemap" label="&amp;modules.referencing.bo.general.SitemapManagement;" global="true">
+		<body><![CDATA[
+		  	this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(0);
+	  	]]></body>
+	</action>
+	<action name="viewRedirections" icon="redirection" label="&amp;modules.referencing.bo.general.RedirectionsManagement;" global="true">
+		<body><![CDATA[
+		  	this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(2);
+	  	]]></body>
+	</action>	
+	<action name="viewUrlRewriting" icon="urlrewriting" label="&amp;modules.referencing.bo.general.Url-rewriting-management;" global="true">
+		<body><![CDATA[
+		  	this.appendToTitle(": %label% ".toLowerCase());
+	  		this.viewLayout(4);
+	  	]]></body>
+	</action>	
+	<action name="updateUI">
+		<body><![CDATA[
+	    	var selectedIndex = parseInt(this.getElementById('contentDeck').selectedIndex);
+	    	if (selectedIndex < 1 || selectedIndex == NaN)
+	    	{
+	    		selectedIndex = 0;
+	    	}
+	    	wCore.debug('[referencing::updateUI] selected view = ' + selectedIndex);
+	    	
+	    	switch (selectedIndex)
+	  		{
+	  			// Redirections
+	  			case 2 :
+					var form = document.getElementById('modules_referencing_widget_redirectionsForm');
+					if ('website' in form._fields) 
+					{
+						form.getFieldByName('website').value = this.currentRedirectionWebsiteId;
+					}
+					this.loadRedirectionList();
+	  				break;
+	  			
+	  			// URL rewriting
+	  			case 4 :
+	  				this.loadUrlRewritingModuleList();
+	  				break;
+	  			
+	  			// Settings andd permissions
+	  			case 5 :
+	  				break;
+	  				
+	  			// Sitemap
+	  			case 0 :
+	  			default :
+	  				this.loadUrlList(true);
+	  				this.loadExcludedUrlList();
+	  				break;
+	  		}
+		]]></body>
+	</action>
+	<action name="onModuleInit">
+		<body><![CDATA[
+	    	this.excludedUrlListInitialValue = null;
+	    	this.currentTabIndex = 0;
+	    	this.initListerners();
+	    	this.initWebsiteList();
+	    ]]></body>
+	</action>
+	<action name="initListerners">
+		<body><![CDATA[
+	    	var module = this;
+	    	
+	    	var listbox = this.getElementById('redirectionsList');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.editSelectedRedirection();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('dblclick', handler, false);
+	    	
+	    	var listbox = this.getElementById('urlList');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.onUrlSelected();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('select', handler, false);
+	    	
+	    	var listbox = this.getElementById('sitemap_url_changefreq');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.updateOptionsUrlButton();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('command', handler, false);
+	    	
+	    	var listbox = this.getElementById('sitemap_url_priority');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.updateOptionsUrlButton();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('command', handler, false);
+	    	
+	    	// Url rewriting.
+	    	var listbox = this.getElementById('urlRewritingModuleList');
+	    	var handler = {
+	    		handleEvent: function(e) {
+	    			module.editSelectedUrlRewriting();
+	    		}    	
+	    	};
+	    	listbox.addEventListener('dblclick', handler, false);
+	    ]]></body>
+	</action>
 	<action name="initWebsiteList">
 		<body><![CDATA[
 	  		this.loadWebsiteList();
 		]]></body>
-	</action>
+	</action>	
 	<action name="loadWebsiteList">
 		<body><![CDATA[
-			this.execute("&amp;modules.referencing.bo.actions.LoadWebsiteList;", "LoadWebsiteList", { });
+			me = this;
+			var callBack = function(result) { me.loadWebsiteListCallback(result); };
+			wCore.executeJSON('referencing', 'LoadWebsiteList', {}, callBack, true);
 		]]></body>
-	</action>
-	<action name="onLoadWebsiteListSuccess">
-		<parameter name="e4x" />
+	</action>	
+	<action name="loadWebsiteListCallback">
+		<parameter name="result" />
 		<body><![CDATA[
-			var itemContainer = this.getElementById('websiteMenulist');
-			for (var i=0 ; i<e4x.website.length() ; i++)
+			// For sitemap.
+			var items = result.contents.forSitemap;
+			var itemContainer = this.getElementById('sitemapWebsiteMenulist');
+			for (var i = 0; i < items.length; i++)
 			{
-				var websiteId = e4x.website[i].@id.toString();
-				var websiteDomain = e4x.website[i].@domain.toString();
+				var id = items[i].id;
+				var lang = items[i].lang;
 				if (i == 0)
 				{
-					this.currentWebsiteId = websiteId;
+					this.currentSitemapWebsiteId = id;
+					this.currentSitemapWebsiteLang = lang;
 				}
-				itemContainer.appendItem(e4x.website[i].toString() + " ("+websiteDomain+")", websiteId);
+				itemContainer.appendItem(items[i].label + ' (' + items[i].domain + ')', id  + '/' + lang);
 			}
 			itemContainer.selectedIndex = 0;
+			this.onSitemapWebsiteChanged(itemContainer);	
 			this.loadModelList();
-			this.onWebsiteChanged(itemContainer);
-		]]></body>
-	</action>
-	<action name="onWebsiteChanged">
-		<parameter name="menulist" />
-		<body><![CDATA[
-			this.currentWebsiteId = menulist.value;
-			this.updateUI();
-		]]></body>
-	</action>
-	<action name="loadModelList">
-		<body><![CDATA[
-			this.execute("&amp;modules.referencing.bo.actions.LoadModelList;", "LoadModelList", { });
-		]]></body>
-	</action>
-	<action name="onLoadModelListSuccess">
-		<parameter name="e4x" />
-		<body><![CDATA[
-			var itemContainer = this.getElementById('modelMenuList');
-			itemContainer.appendItem("&amp;modules.referencing.bo.general.Select;", 'none');
-			for (var i=0 ; i<e4x.model.length() ; i++)
+			
+			// For redirections.
+			var items = result.contents.forRedirection;
+			var itemContainer = this.getElementById('redirectionWebsiteMenulist');
+			for (var i = 0; i < items.length; i++)
 			{
-				var key = e4x.model[i].@name.toString();
-				var label = e4x.model[i].toString();
-				itemContainer.appendItem(label + " (" + key + ")", key);
+				var websiteId = items[i].id;
+				if (i == 0)
+				{
+					this.currentRedirectionWebsiteId = websiteId;
+				}
+				itemContainer.appendItem(items[i].label + ' (' + items[i].domain + ')', websiteId);
 			}
 			itemContainer.selectedIndex = 0;
-		]]></body>
-	</action>
-	<action name="onModelChanged">
-		<parameter name="menulist" />
-		<body><![CDATA[
-			this.currentModelName = menulist.value;
-			this.updateUI();
+			this.onRedirectionWebsiteChanged(itemContainer);			
 		]]></body>
 	</action>
 	
 	<!-- Redirections management -->
+	<action name="onRedirectionWebsiteChanged">
+		<parameter name="menulist" />
+		<body><![CDATA[
+			this.currentRedirectionWebsiteId = menulist.value;
+			this.updateUI();
+		]]></body>
+	</action>
 	<action name="createRedirection" icon="add" label="&amp;modules.referencing.bo.actions.Create-Redirection;">
 		<parameter name="listWidget" />
 		<body><![CDATA[
-	    	this.createDocumentWithParent({id: this.currentWebsiteId}, this.name, 'redirection', 'redirectionsForm');
+	    	this.createDocumentWithParent({id: this.currentRedirectionWebsiteId}, this.name, 'redirection', 'redirectionsForm');
 	    ]]></body>
 	</action>
 	<action name="deleteSelectedRedirections">
@@ -94,7 +212,7 @@
 	    	}
 	    	if (confirm(message))
 	    	{
-	    		this.doDelete(ids, labels, [ this.currentWebsiteId ], null, this);
+	    		this.doDelete(ids, labels, [ this.currentRedirectionWebsiteId ], null, this);
 	    	}
 	    ]]></body>
 	</action>
@@ -105,12 +223,12 @@
 	</action>
 	<action name="downloadRedirectionsAsCSV">
 		<body><![CDATA[
-	    	window.open(this.getController().makeUrl('referencing', 'ExportRedirections', { websiteId: this.currentWebsiteId } ), 'rbs_change_modules_referencing_view_window', 'width=100,height=100,scrollbars=no');
+	    	window.open(this.getController().makeUrl('referencing', 'ExportRedirections', { websiteId: this.currentRedirectionWebsiteId } ), 'rbs_change_modules_referencing_view_window', 'width=100,height=100,scrollbars=no');
 	    ]]></body>
 	</action>
 	<action name="uploadRedirectionsCSVFile">
 		<body><![CDATA[
-	    	wToolkit.dialog('referencing', 'UploadRedirectionsFile', { websiteId: this.currentWebsiteId } , { width:600, height:400 }, false, false);
+	    	wToolkit.dialog('referencing', 'UploadRedirectionsFile', { websiteId: this.currentRedirectionWebsiteId } , { width:600, height:400 }, false, false);
 	    ]]></body>
 	</action>
 	<action name="generateRedirectionFile">
@@ -120,7 +238,7 @@
 	</action>
 	<action name="loadRedirectionList">
 		<body><![CDATA[
-			this.execute("&amp;modules.referencing.bo.actions.LoadRedirectionList;", "LoadRedirectionList", { websiteId: this.currentWebsiteId });
+			this.execute("&amp;modules.referencing.bo.actions.LoadRedirectionList;", "LoadRedirectionList", { websiteId: this.currentRedirectionWebsiteId });
 		]]></body>
 	</action>
 	<action name="onLoadRedirectionListSuccess">
@@ -155,17 +273,52 @@
 	</action>
 	
 	<!--  Sitemap.xml management -->
+	<action name="onSitemapWebsiteChanged">
+		<parameter name="menulist" />
+		<body><![CDATA[
+			var elems = menulist.value.split('/');
+			this.currentSitemapWebsiteId = elems[0];
+			this.currentSitemapWebsiteLang = elems[1];
+			this.updateUI();
+		]]></body>
+	</action>
+	<action name="loadModelList">
+		<body><![CDATA[
+			this.execute("&amp;modules.referencing.bo.actions.LoadModelList;", "LoadModelList", { });
+		]]></body>
+	</action>
+	<action name="onLoadModelListSuccess">
+		<parameter name="e4x" />
+		<body><![CDATA[
+			var itemContainer = this.getElementById('modelMenuList');
+			itemContainer.appendItem("&amp;modules.referencing.bo.general.Select;", 'none');
+			for (var i=0 ; i<e4x.model.length() ; i++)
+			{
+				var key = e4x.model[i].@name.toString();
+				var label = e4x.model[i].toString();
+				itemContainer.appendItem(label + " (" + key + ")", key);
+			}
+			itemContainer.selectedIndex = 0;
+		]]></body>
+	</action>
+	<action name="onModelChanged">
+		<parameter name="menulist" />
+		<body><![CDATA[
+			this.currentModelName = menulist.value;
+			this.updateUI();
+		]]></body>
+	</action>
 	<action name="generateSitemapFile">
 		<body><![CDATA[
 			if (confirm("&amp;modules.referencing.bo.actions.GenerateSitemapFileConfirm;")) 
 			{
-				this.execute("&amp;modules.referencing.bo.actions.GenerateSitemapFile;", "GenerateSitemapFile", { websiteId: this.currentWebsiteId });
+				this.execute("&amp;modules.referencing.bo.actions.GenerateSitemapFile;", "GenerateSitemapFile", { websiteId: this.currentSitemapWebsiteId, forLang: this.currentSitemapWebsiteLang });
 			}
 	    ]]></body>
 	</action>
 	<action name="saveExcludedUrlList">
 		<body><![CDATA[
-			this.execute("&amp;modules.referencing.bo.actions.SaveExcludedUrlList;", "SaveExcludedUrlList", { contents: this.getElementById('excludedUrlListContents').value, websiteId: this.currentWebsiteId });
+			this.execute("&amp;modules.referencing.bo.actions.SaveExcludedUrlList;", "SaveExcludedUrlList", { contents: this.getElementById('excludedUrlListContents').value, websiteId: this.currentSitemapWebsiteId, forLang: this.currentSitemapWebsiteLang });
 		]]></body>
 	</action>
 	<action name="onSaveExcludedUrlListSuccess">
@@ -181,7 +334,7 @@
 	<action name="loadExcludedUrlList">
 		<body><![CDATA[
 			var parameters = {
-				websiteId: this.currentWebsiteId
+				websiteId: this.currentSitemapWebsiteId, forLang: this.currentSitemapWebsiteLang
 			};
 			this.execute("&amp;modules.referencing.bo.actions.LoadExcludedUrlList;", "LoadExcludedUrlList", parameters);
 		]]></body>
@@ -229,7 +382,8 @@
 				else
 				{
 					var parameters = {
-						websiteId: this.currentWebsiteId,
+						websiteId: this.currentSitemapWebsiteId, 
+						forLang: this.currentSitemapWebsiteLang,
 						modelName: this.currentModelName
 					};
 					this.execute("&amp;modules.referencing.bo.actions.LoadUrlList;", "LoadUrlList", parameters);
@@ -348,61 +502,6 @@
 			this.getElementById('btnRefreshUrlList').disabled = box.collapsed;
 	  	]]></body>
 	</action>
-	<action name="onModuleInit">
-		<body><![CDATA[
-	    	this.excludedUrlListInitialValue = null;
-	    	this.robotsTxtInitialValue = null;
-	    	this.currentTabIndex = 0;
-	    	this.initListerners();
-	    	this.initWebsiteList();
-	    ]]></body>
-	</action>
-	<action name="initListerners">
-		<body><![CDATA[
-	    	var module = this;
-	    	
-	    	var listbox = this.getElementById('redirectionsList');
-	    	var handler = {
-	    		handleEvent: function(e) {
-	    			module.editSelectedRedirection();
-	    		}    	
-	    	};
-	    	listbox.addEventListener('dblclick', handler, false);
-	    	
-	    	var listbox = this.getElementById('urlList');
-	    	var handler = {
-	    		handleEvent: function(e) {
-	    			module.onUrlSelected();
-	    		}    	
-	    	};
-	    	listbox.addEventListener('select', handler, false);
-	    	
-	    	var listbox = this.getElementById('sitemap_url_changefreq');
-	    	var handler = {
-	    		handleEvent: function(e) {
-	    			module.updateOptionsUrlButton();
-	    		}    	
-	    	};
-	    	listbox.addEventListener('command', handler, false);
-	    	
-	    	var listbox = this.getElementById('sitemap_url_priority');
-	    	var handler = {
-	    		handleEvent: function(e) {
-	    			module.updateOptionsUrlButton();
-	    		}    	
-	    	};
-	    	listbox.addEventListener('command', handler, false);
-	    	
-	    	// Url rewriting.
-	    	var listbox = this.getElementById('urlRewritingModuleList');
-	    	var handler = {
-	    		handleEvent: function(e) {
-	    			module.editSelectedUrlRewriting();
-	    		}    	
-	    	};
-	    	listbox.addEventListener('dblclick', handler, false);
-	    ]]></body>
-	</action>
 	<action name="editRedirection">
 		<parameter name="id" />
 		<parameter name="lang" />
@@ -454,7 +553,8 @@
 	<action name="saveSitemapOptions">
 		<body><![CDATA[
 			var parameters = {
-				websiteId: this.currentWebsiteId,
+				websiteId: this.currentSitemapWebsiteId,
+				forLang: this.currentSitemapWebsiteLang,
 				modelName: this.currentModelName,
 				priority: this.getElementById('sitemap_priority').value,
 				changefreq: this.getElementById('sitemap_changefreq').value
@@ -475,7 +575,8 @@
 	    	if (priority != '-' && changeFreq != '-')
 	    	{
 				var parameters = {
-					websiteId: this.currentWebsiteId,
+					websiteId: this.currentSitemapWebsiteId,
+					forLang: this.currentSitemapWebsiteLang,
 					modelName: this.currentModelName,
 					priority: priority,
 					changefreq: changeFreq,
@@ -619,84 +720,6 @@
 	    	var documentId = parseInt(listbox.selectedItems[0].childNodes[5].getAttribute('label'));
 			this.editUrlRewriting(package, documentId);
 	    ]]></body>
-	</action>
-
-	<!-- Module's main layout -->
-	<action name="viewSitemap" icon="sitemap" label="&amp;modules.referencing.bo.general.SitemapManagement;" global="true">
-		<body><![CDATA[
-		  	this.appendToTitle(": %label% ".toLowerCase());
-	  		this.viewLayout(0);
-	  	]]></body>
-	</action>
-	<action name="viewRedirections" icon="redirection" label="&amp;modules.referencing.bo.general.RedirectionsManagement;" global="true">
-		<body><![CDATA[
-		  	this.appendToTitle(": %label% ".toLowerCase());
-	  		this.viewLayout(2);
-	  	]]></body>
-	</action>	
-	<action name="viewUrlRewriting" icon="urlrewriting" label="&amp;modules.referencing.bo.general.Url-rewriting-management;" global="true">
-		<body><![CDATA[
-		  	this.appendToTitle(": %label% ".toLowerCase());
-	  		this.viewLayout(4);
-	  	]]></body>
-	</action>
-	
-	<action name="viewLayout">
-		<parameter name="index" />
-		<body><![CDATA[
-	  		var deck = this.getElementById('contentDeck');
-	  		if (deck.selectedIndex != index)
-	  		{
-	  			deck.selectedIndex = index;
-	  			this.updateUI();
-	  			return true;
-	  		}  		
-	  		return false;
-		]]></body>
-	</action>
-	<action name="updateUI">
-		<body><![CDATA[
-	    	if (!this.currentWebsiteId)
-	    	{
-	    		return;
-	    	}
-	    	
-	    	var selectedIndex = parseInt(this.getElementById('contentDeck').selectedIndex);
-	    	if (selectedIndex < 1 || selectedIndex == NaN)
-	    	{
-	    		selectedIndex = 0;
-	    	}
-	    	wCore.debug('[referencing::updateUI] selected view = ' + selectedIndex);
-	    	
-	    	switch (selectedIndex)
-	  		{
-	  			// Redirections
-	  			case 2 :
-					var form = document.getElementById('modules_referencing_widget_redirectionsForm');
-					if ('website' in form._fields) 
-					{
-						form.getFieldByName('website').value = this.currentWebsiteId;
-					}
-					this.loadRedirectionList();
-	  				break;
-	  			
-	  			// URL rewriting
-	  			case 4 :
-	  				this.loadUrlRewritingModuleList();
-	  				break;
-	  			
-	  			// Settings andd permissions
-	  			case 5 :
-	  				break;
-	  				
-	  			// Sitemap
-	  			case 0 :
-	  			default :
-	  				this.loadUrlList(true);
-	  				this.loadExcludedUrlList();
-	  				break;
-	  		} 
-		]]></body>
 	</action>
 
 	<!-- Permissions -->

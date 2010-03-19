@@ -36,8 +36,8 @@ class commands_GenerateSitemap extends commands_AbstractChangeCommand
 	{
 		$this->loadFramework();
 		$domains = website_WebsiteService::getInstance()->createQuery()
-		->setProjection(Projections::property("domain"))
-		->findColumn("domain");
+			->setProjection(Projections::property("domain"))
+			->findColumn("domain");
 		return array_diff($domains, $params);
 	}
 
@@ -53,14 +53,21 @@ class commands_GenerateSitemap extends commands_AbstractChangeCommand
 		$this->message("== Generate sitemap for $domain ==");
 
 		$this->loadFramework();
-		$website = website_WebsiteService::getInstance()->createQuery()
-		->add(Restrictions::eq('domain', $domain))
-		->findUnique();
-		if ($website === null)
+		
+		$wsms = website_WebsiteModuleService::getInstance();
+		$websiteInfo  = $wsms->getWebsiteInfos($domain);
+		
+		if ($websiteInfo === null)
 		{
 			return $this->quitError("No website with domain $domain");
 		}
-		referencing_ReferencingService::getInstance()->saveSitemapContents($website);
+		
+		$website = DocumentHelper::getDocumentInstance($websiteInfo['id'], 'modules_website/website');
+		$lang = $websiteInfo['localizebypath'] ? 'all' : f_util_ArrayUtils::firstElement($websiteInfo['langs']);
+		
+		$rs = referencing_ReferencingService::getInstance();
+		$rs->createStorageDirectory();
+		$rs->saveSitemapContents($website, $lang);
 
 		$this->okMessage("Site map successfully generated");
 	}

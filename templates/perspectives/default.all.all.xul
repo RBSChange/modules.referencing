@@ -1,15 +1,14 @@
 <hbox flex="1">
 	<vbox flex="1">
-		<hbox class="website-selection">
-			<label control="modules_referencing_websiteMenulist" change:i18nattr="value &amp;modules.referencing.bo.general.WebsiteLabel;" style="padding-top:3px; font-size: 14pt; font-weight: bold;"></label>
-			<menulist id="modules_referencing_websiteMenulist" anonid="websiteMenulist" oncommand="onWebsiteChanged(this)">
-				<menupopup />
-			</menulist>
-		</hbox>
-	
 		<deck flex="1" orient="vertical" anonid="contentDeck">
 			<!-- 0. Sitemap -->
 			<vbox flex="1">
+				<hbox class="website-selection">
+					<label control="modules_referencing_sitemapWebsiteMenulist" change:i18nattr="value &amp;modules.referencing.bo.general.WebsiteLabel;" style="padding-top:3px; font-size: 14pt; font-weight: bold;"></label>
+					<menulist id="modules_referencing_sitemapWebsiteMenulist" anonid="sitemapWebsiteMenulist" oncommand="onSitemapWebsiteChanged(this)">
+						<menupopup />
+					</menulist>
+				</hbox>
 				<toolbox>
 					<toolbar>
 						<toolbarbutton anonid="btnToggleViewUrlList" oncommand="toggleViewUrlList()" i18n:attributes="label &amp;modules.referencing.bo.general.HideUrlListSpaced;" change:icon="search/small" />
@@ -133,8 +132,14 @@
 			
 			<!-- 2. Redirections -->
 			<vbox flex="1">
-	  				<toolbox>
-	  					<toolbar>
+				<hbox class="website-selection">
+					<label control="modules_referencing_redirectionWebsiteMenulist" change:i18nattr="value &amp;modules.referencing.bo.general.WebsiteLabel;" style="padding-top:3px; font-size: 14pt; font-weight: bold;"></label>
+					<menulist id="modules_referencing_redirectionWebsiteMenulist" anonid="redirectionWebsiteMenulist" oncommand="onRedirectionWebsiteChanged(this)">
+						<menupopup />
+					</menulist>
+				</hbox>			
+	  			<toolbox>
+	  				<toolbar>
 	   					<toolbarbutton change:icon="refresh/small" i18n:attributes="label &amp;modules.uixul.bo.actions.RefreshSpaced;" oncommand="loadRedirectionList()" />
 	   					<toolbarseparator />
 	   					<toolbarbutton change:icon="add/small" i18n:attributes="label &amp;modules.referencing.bo.actions.Create-RedirectionSpaced;" oncommand="createRedirection()" />

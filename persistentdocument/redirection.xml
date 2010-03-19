@@ -4,13 +4,13 @@
 	model-version="1.0" icon="undo" linked-to-root-module="false" has-url="false"
 	publish-on-day-change="false" backoffice-indexable="false" table-name-oci="m_referencing_doc_redirect">
 	<properties>
-		<add name="oldUrl" type="String" min-occurs="1" max-occurs="1">
+		<add name="oldUrl" type="String" min-occurs="1">
 			<constraints>matches:^[^ ]{0,254}$</constraints>
 		</add>
-		<add name="newUrl" type="String" min-occurs="1" max-occurs="1">
+		<add name="newUrl" type="String" min-occurs="1">
 			<constraints>matches:^http\://[^ ]{0,243}$</constraints>
 		</add>
-		<add name="website" type="modules_website/website" min-occurs="1" max-occurs="1" tree-node="true" />
+		<add name="website" type="modules_website/website" min-occurs="1" tree-node="true" />
 	</properties>
 	<statuses default="ACTIVE" />
 	<form>

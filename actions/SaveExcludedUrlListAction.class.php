@@ -9,8 +9,9 @@ class referencing_SaveExcludedUrlListAction extends f_action_BaseAction
 	{
 		referencing_ReferencingService::getInstance()->saveSitemapExcludedUrlList(
 			DocumentHelper::getDocumentInstance($request->getParameter('websiteId')),
+			$request->getParameter('forLang'),
 			$request->getParameter('contents')
-			);
+		);
 		return self::getSuccessView();
 	}
 

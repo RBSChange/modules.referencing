@@ -23,7 +23,7 @@ class referencing_LoadUrlListAction extends f_action_BaseAction
 			$maxUrl = self::MAX_URL;
 		}
 		
-		$urlInfoArray = $rs->getUrlInfoArray($website, $modelName, true, $maxUrl);
+		$urlInfoArray = $rs->getUrlInfoArray($website, $request->getParameter('forLang'), $modelName, true, $maxUrl);
 		
 		// Sort URL alphabetically.
 		$url = array();

@@ -20,20 +20,10 @@
 		<locale lang="en">Sitemap file management</locale>
 		<locale lang="de">Verwaltung der Datei Sitemap</locale>
 	</entity>
-	<entity id="robotsTxtManagement">
-		<locale lang="fr">gestion du fichier robots.txt</locale>
-		<locale lang="en">robots.txt file management</locale>
-		<locale lang="de">Verwaltung der Datei robots.txt</locale>
-	</entity>
 	<entity id="redirectionsManagement">
 		<locale lang="fr">gestion des redirections</locale>
 		<locale lang="en">redirections management</locale>
 		<locale lang="de">Verwaltung der Weiterleitungen</locale>
-	</entity>
-	<entity id="IdFilesManagement">
-		<locale lang="fr">gestion des fichiers identifiants</locale>
-		<locale lang="en">ID files management</locale>
-		<locale lang="de">Verwaltung der Datei Benutzernamen</locale>
 	</entity>
 	<entity id="urlrewriting-management">
 		<locale lang="fr">réécriture d'URL</locale>
@@ -115,11 +105,6 @@
 		<locale lang="en">Help</locale>
 		<locale lang="de">Hilfe</locale>
 	</entity>
-	<entity id="WriteRobotsTxtFile">
-		<locale lang="fr">Générer le fichier robots.txt</locale>
-		<locale lang="en">Generate robots.txt file</locale>
-		<locale lang="de">Datei robots.txt generieren</locale>
-	</entity>
 	<entity id="WriteFullUrlToSitemapFile">
 		<locale lang="fr">Mettre l'URL complète du fichier</locale>
 		<locale lang="en">Write full URL to Sitemap file</locale>
@@ -189,11 +174,6 @@
 		<locale lang="fr">type de documents</locale>
 		<locale lang="en">documents type</locale>
 		<locale lang="de">Dokumentenart</locale>
-	</entity>
-	<entity id="IdInFileName">
-		<locale lang="fr">ID dans le nom du fichier</locale>
-		<locale lang="en">filename ID</locale>
-		<locale lang="de">ID im Dokumentenname</locale>
 	</entity>
 	<entity id="FileContents">
 		<locale lang="fr">contenu du fichier</locale>

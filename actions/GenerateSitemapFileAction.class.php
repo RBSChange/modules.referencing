@@ -9,8 +9,9 @@ class referencing_GenerateSitemapFileAction extends f_action_BaseAction
 	{
 		set_time_limit(0);
 		referencing_ReferencingService::getInstance()->saveSitemapContents(
-			DocumentHelper::getDocumentInstance($request->getParameter('websiteId'))
-			);
+			DocumentHelper::getDocumentInstance($request->getParameter('websiteId')),
+			$request->getParameter('forLang')
+		);
 		return self::getSuccessView();
 	}
 
