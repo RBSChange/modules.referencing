@@ -31,7 +31,7 @@ if (count($docIds) > 0)
 {
 	Framework::info("start DocId : " . $docIds[0]);
 	$filerc = fopen($tmpFilePath, "a");
-	referencing_ReferencingService::getInstance()->updateTempSiteMap($filerc, $website, $docIds);
+	referencing_ReferencingService::getInstance()->updateTempSiteMap($filerc, $website, $lang, $docIds);
 	fclose($filerc);
 }
 Framework::info("Chunk end");

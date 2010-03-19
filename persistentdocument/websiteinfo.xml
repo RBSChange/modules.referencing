@@ -7,6 +7,6 @@
 		<add name="sitemapUrlInfo" type="LongString" />
 		<add name="sitemapOptions" type="LongString" />
 		<add name="website" type="modules_website/website" min-occurs="1" />
-		<add name="forLang" type="String" default-value="all" min-occurs="1" />
+		<add name="forLang" type="String" min-occurs="1" />
 	</properties>
 </document>

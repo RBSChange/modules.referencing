@@ -28,9 +28,12 @@ class referencing_patch_0300 extends patch_BasePatch
 		// Set the forLang property for existing docs.
 		foreach (referencing_WebsiteinfoService::getInstance()->createQuery()->find() as $websiteInfo)
 		{
-			$website = $websiteInfo->getWebsite();
-			$websiteInfo->setForLang($website->getLocalizebypath() ? 'all' : $website->getLang());
-			$websiteInfo->save();
+			if ($websiteInfo->getForLang() === null)
+			{
+				$website = $websiteInfo->getWebsite();
+				$websiteInfo->setForLang($website->getLocalizebypath() ? 'all' : $website->getLang());
+				$websiteInfo->save();
+			}
 		}
 	}
 

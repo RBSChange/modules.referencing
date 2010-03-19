@@ -500,7 +500,7 @@ class referencing_ReferencingService extends BaseService
 					{
 						Framework::info("processing chunk " . $index ++ . " out of " . $nChunks . " for " . $tmpFile);
 						$batch = f_util_FileUtils::buildWebeditPath('modules', 'referencing', 'bin', 'generateSitemap.php');
-						$processHandle = popen("php $batch " . WEBEDIT_HOME . " " . RequestContext::getInstance()->getLang() . " " . $website->getId() . " " . $tmpFile . " " . implode(" ", $chunk), "r");
+						$processHandle = popen("php $batch " . WEBEDIT_HOME . " " . $lang . " " . $website->getId() . " " . $tmpFile . " " . implode(" ", $chunk), "r");
 						while (($string = fread($processHandle, 1000)) != false)
 						{
 							Framework::info($string);
@@ -573,9 +573,10 @@ class referencing_ReferencingService extends BaseService
 	/**
 	 * @param unknown_type $filerc
 	 * @param website_persistentdoculent_website $website
+	 * @param String $forLang
 	 * @param Integer[] $docIds
 	 */
-	public function updateTempSiteMap($filerc, $website, $docIds)
+	public function updateTempSiteMap($filerc, $website, $forLang, $docIds)
 	{
 		foreach ($docIds as $id)
 		{
@@ -587,18 +588,18 @@ class referencing_ReferencingService extends BaseService
 				if ($this->isAllowedInSitemap($doc))
 				{
 					$url = LinkHelper::getDocumentUrl($doc);
-					$isUrlExcluded = $this->isUrlExcludedInWebsite($url, $website);
+					$isUrlExcluded = $this->isUrlExcludedInWebsite($url, $website, $forLang);
 					if (! $isUrlExcluded)
 					{
-						$modelPriority = $this->getSitemapOption($website, $model->getName(), self::SITEMAP_PRIORITY);
-						$modelChangefreq = $this->getSitemapOption($website, $model->getName(), self::SITEMAP_CHANGEFREQ);
+						$modelPriority = $this->getSitemapOption($website, $forLang, $model->getName(), self::SITEMAP_PRIORITY);
+						$modelChangefreq = $this->getSitemapOption($website, $forLang, $model->getName(), self::SITEMAP_CHANGEFREQ);
 						
 						$urlInfo = new referencing_UrlInfo();
 						$urlInfo->loc = $url;
 						$urlInfo->lastmod = date('c', date_Calendar::getInstance($doc->getModificationDate())->getTimestamp());
 						$urlInfo->isExcluded = $isUrlExcluded;
-						$urlPriority = $this->getSitemapOptionForUrl($website, $url, self::SITEMAP_PRIORITY);
-						$urlChangefreq = $this->getSitemapOptionForUrl($website, $url, self::SITEMAP_CHANGEFREQ);
+						$urlPriority = $this->getSitemapOptionForUrl($website, $forLang, $url, self::SITEMAP_PRIORITY);
+						$urlChangefreq = $this->getSitemapOptionForUrl($website, $forLang, $url, self::SITEMAP_CHANGEFREQ);
 						$urlInfo->priority = is_null($urlPriority) ? $modelPriority : $urlPriority;
 						$urlInfo->changefreq = is_null($urlChangefreq) ? $modelChangefreq : $urlChangefreq;
 						

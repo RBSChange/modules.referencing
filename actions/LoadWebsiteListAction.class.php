@@ -16,7 +16,7 @@ class referencing_LoadWebsiteListAction extends f_action_BaseJSONAction
 			$forRedirection[] = array('id' => $website->getId(), 'domain' => $website->getDomain(), 'label' => $website->getLabel());
 			if (!$website->getLocalizebypath())
 			{
-				foreach ($rqc->getSupportedLanguages() as $lang)
+				foreach ($website->getI18nInfo()->getLangs() as $lang)
 				{
 					try 
 					{
