@@ -512,7 +512,7 @@ class referencing_ReferencingService extends BaseService
 					$this->compressFile($tmpFile, $this->getSitemapPathForWebsite($website, $forLang, $siteMapIndex));
 					unlink($tmpFile);
 					
-					$siteMaps[] = array('url' => $this->getSitemapUrl($website, $siteMapIndex), 'lastMod' => date('c', time()));
+					$siteMaps[] = array('url' => $this->getSitemapUrl($website, $forLang, $siteMapIndex), 'lastMod' => date('c', time()));
 					$siteMapIndex++;
 				}
 		
