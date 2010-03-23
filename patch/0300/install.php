@@ -10,6 +10,13 @@ class referencing_patch_0300 extends patch_BasePatch
 	 */
 	public function execute()
 	{
+		// Compile-documents.
+		ChangeProject::getInstance()->executeTask('compile-documents');
+		ChangeProject::getInstance()->executeTask('compile-locales', array('referencing'));
+		
+		// Create storage directory if not exist.
+		referencing_ReferencingService::getInstance()->createStorageDirectory();
+		
 		// Remove old properties for robotsTxt and search engine ids.
 		$archivePath = f_util_FileUtils::buildWebeditPath('modules/referencing/patch/0300/websiteinfo-old.xml');
 		$oldModel = generator_PersistentModel::loadModelFromString(f_util_FileUtils::read($archivePath), 'referencing', 'websiteinfo');

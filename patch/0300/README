@@ -1,3 +1,4 @@
 Version: 3.0.1
 
-Explain here the function of your patch.
+- remove the old robotsTxt and engineIdInfo fields.
+- add the forLang property.
