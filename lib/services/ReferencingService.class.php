@@ -193,7 +193,7 @@ class referencing_ReferencingService extends BaseService
 	public function getUrlInfoArray($website, $forLang, $modelName = null, $includeExcludedUrl = false, $maxUrls = -1)
 	{
 		website_WebsiteModuleService::getInstance()->setCurrentWebsite($website);
-		if (is_null($modelName))
+		if ($modelName === null)
 		{
 			$models = $this->getPersistentModels();
 		}
@@ -322,7 +322,7 @@ class referencing_ReferencingService extends BaseService
 			$query = $model->getDocumentService()->createQuery()
 				->add(Restrictions::published())->add(Restrictions::eq('model', $model->getName()))
 				->setProjection(Projections::property('id'));
-			
+
 			if ($maxUrl > 0)
 			{
 				$query->setMaxResults($maxUrl);
@@ -373,7 +373,7 @@ class referencing_ReferencingService extends BaseService
 			{
 				$rqc->beginI18nWork($lang);
 				
-				$resultArray = $this->buildDocumentIds($website, $model, $maxUrl);						
+				$resultArray = $this->buildDocumentIds($website, $model, $maxUrl);
 				foreach ($resultArray as $result)
 				{
 					$doc = DocumentHelper::getDocumentInstance($result);
@@ -694,7 +694,7 @@ class referencing_ReferencingService extends BaseService
 		if (!isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang]))
 		{
 			$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang);
-			if ($infoDoc !== null)
+			if ($infoDoc !== null && is_string($infoDoc->getSitemapOptions()))
 			{
 				$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapOptions());
 			}

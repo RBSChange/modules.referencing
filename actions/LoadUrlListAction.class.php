@@ -11,6 +11,7 @@ class referencing_LoadUrlListAction extends f_action_BaseAction
 	{
 		$website = DocumentHelper::getDocumentInstance($request->getParameter('websiteId'));
 		$modelName = $request->getParameter('modelName');
+		$forLang = $request->getParameter('forLang');
 		// Get URL info, including excluded URL (true).
 		$rs = referencing_ReferencingService::getInstance();
 		
@@ -23,7 +24,7 @@ class referencing_LoadUrlListAction extends f_action_BaseAction
 			$maxUrl = self::MAX_URL;
 		}
 		
-		$urlInfoArray = $rs->getUrlInfoArray($website, $request->getParameter('forLang'), $modelName, true, $maxUrl);
+		$urlInfoArray = $rs->getUrlInfoArray($website, $forLang, $modelName, true, $maxUrl);
 		
 		// Sort URL alphabetically.
 		$url = array();
@@ -41,8 +42,8 @@ class referencing_LoadUrlListAction extends f_action_BaseAction
 			->load('sitemap-simple');
 		$template->setAttribute('urlInfoArray', $urlInfoArray);
 		
-		$priority = $rs->getSitemapOption($website, $modelName, 'priority');
-		$changefreq = $rs->getSitemapOption($website, $modelName, 'changefreq');
+		$priority = $rs->getSitemapOption($website, $forLang, $modelName, 'priority');
+		$changefreq = $rs->getSitemapOption($website, $forLang, $modelName, 'changefreq');
 		$template->setAttribute(
 			'options',
 			array(
