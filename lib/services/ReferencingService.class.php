@@ -860,6 +860,15 @@ class referencing_ReferencingService extends BaseService
 		
 		if ($generate)
 		{
+			try 
+			{
+				Controller::getInstance();
+			} 
+			catch (ControllerException $e)
+			{
+				Controller::newInstance("controller_ChangeController");
+			}
+			
 			$this->generateAllSitemapFiles();
 		}
 	}
@@ -869,9 +878,14 @@ class referencing_ReferencingService extends BaseService
 	 */
 	private function generateAllSitemapFiles()
 	{
-		foreach (website_WebsiteService::getInstance()->createQuery()->find() as $website)
+		$websites = website_WebsiteService::getInstance()->createQuery()->find();
+		foreach ($websites as $website)
 		{
-			$this->saveSitemapContents($website);
+			$langs = ($website->getLocalizebypath()) ? array('all') : $website->getI18nInfo()->getLangs();
+			foreach ($langs as $lang)
+			{
+				$this->saveSitemapContents($website, $lang);
+			}	
 		}
 	}
 }
