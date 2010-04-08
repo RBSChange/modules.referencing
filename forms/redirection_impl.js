@@ -11,5 +11,5 @@ function onSave() {
 }
 
 function setWebsiteId() {
-	this.getFieldByName('website').value = this.getModule().currentWebsiteId;
+	this.getFieldByName('website').value = this.getModule().currentRedirectionWebsiteId;
 }

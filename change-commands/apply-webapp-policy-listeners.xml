@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <listeners>
-	<listener pointcut="after" command="referencing.init-seo-directory" />
+	<listener pointcut="before" command="referencing.init-seo-directory" />
 </listeners>

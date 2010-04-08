@@ -47,7 +47,7 @@ class referencing_ReferencingService extends BaseService
 	 */
 	public final function getStorageDirectory()
 	{
-		return f_util_FileUtils::buildWebappPath('seo');
+		return f_util_FileUtils::buildChangeBuildPath('seo');
 	}
 	
 	/**
@@ -57,8 +57,6 @@ class referencing_ReferencingService extends BaseService
 	{
 		$seoDir = $this->getStorageDirectory();
 		f_util_FileUtils::mkdir($seoDir);
-		f_util_FileUtils::chown($seoDir, null, ApacheService::getInstance()->getGroup());
-		f_util_FileUtils::chmod($seoDir, "2775");
 	}
 	
 	/**
