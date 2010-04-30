@@ -25,8 +25,7 @@ class referencing_GetSitemapIndexAction extends referencing_Action
 		}
 		else
 		{
-			$HTTP_Header = new HTTP_Header();
-			$HTTP_Header->sendStatusCode(404);
+			f_web_http_Header::setStatus(404);
 			die();
 		}
 	}
