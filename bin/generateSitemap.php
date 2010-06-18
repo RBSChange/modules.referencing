@@ -1,18 +1,16 @@
 <?php
 
 //generateSitemap.php WEBEDIT_HOME LANG WEBSITEID TEMPFILEPATH DOCID1 DOCID2 ...
-define("WEBEDIT_HOME", $_SERVER['argv'][1]);
-require_once WEBEDIT_HOME . "/framework/Framework.php";
 $controller = Controller::newInstance("controller_ChangeController");
 
-$lang = $_SERVER['argv'][2];
+$lang = $_POST['argv'][0];
 RequestContext::getInstance()->setLang($lang);
 
-$website = DocumentHelper::getDocumentInstance(intval($_SERVER['argv'][3]));
+$website = DocumentHelper::getDocumentInstance(intval($_POST['argv'][1]));
 website_WebsiteModuleService::getInstance()->setCurrentWebsite($website);
 $_SERVER['HTTP_HOST'] = $website->getDomain();
 
-$tmpFilePath = $_SERVER['argv'][4];
+$tmpFilePath = $_POST['argv'][2];
 
 Framework::info("update $tmpFilePath ...");
 Framework::info("WEBEDIT_HOME : " . WEBEDIT_HOME);
@@ -22,9 +20,9 @@ Framework::info("websiteDomain : " . $website->getDomain());
 Framework::info("tmpFilePath : " . $tmpFilePath);
 
 $docIds = array();
-for ($i = 5; $i < (int)$_SERVER['argc']; $i++)
+for ($i = 3; $i < count($_POST['argv']); $i++)
 {
-	$docIds[] = intval($_SERVER['argv'][$i]);
+	$docIds[] = intval($_POST['argv'][$i]);
 }
 
 if (count($docIds) > 0)

@@ -172,9 +172,9 @@ class referencing_ReferencingService extends BaseService
 	{
 		$result = array();
 		$models = $this->getPersistentModels();
-		foreach ($models as $model)
+		foreach ($models as $modelName)
 		{
-			$result = array_merge($result, $this->buildDocumentIds($website, $model, -1));
+			$result = array_merge($result, $this->buildDocumentIds($website, $modelName, -1));
 		}
 		return $result;
 	}
@@ -193,16 +193,16 @@ class referencing_ReferencingService extends BaseService
 		website_WebsiteModuleService::getInstance()->setCurrentWebsite($website);
 		if ($modelName === null)
 		{
-			$models = $this->getPersistentModels();
+			$modelNames = $this->getPersistentModels();
 		}
 		else
 		{
-			$models = array(f_persistentdocument_PersistentDocumentModel::getInstanceFromDocumentModelName($modelName));
+			$modelNames = array($modelName);
 		}
 		$urlInfoArray = array();		
-		foreach ($models as $model)
+		foreach ($modelNames as $modelName)
 		{
-			$this->appendModelToUrlInfoArray($website, $forLang, $model, $urlInfoArray, $includeExcludedUrl, $maxUrls);
+			$this->appendModelToUrlInfoArray($website, $forLang, $modelName, $urlInfoArray, $includeExcludedUrl, $maxUrls);
 		}
 		return $urlInfoArray;
 	}
@@ -213,42 +213,38 @@ class referencing_ReferencingService extends BaseService
 	public function getPersistentModels()
 	{
 		$result = array();
-		$models = f_persistentdocument_PersistentDocumentModel::getDocumentModels();
+		$modelsByModule =  f_persistentdocument_PersistentDocumentModel::getDocumentModelNamesByModules();
 		$excludedModels = $this->getExludedModels();
-		foreach ($models as $model)
+		foreach ($modelsByModule as $models)
 		{
-			if ($model->getDocumentName() === 'preferences' || isset($excludedModels[$model->getName()]))
+			foreach ($models as $modelName)
 			{
-				continue;
-			}
-			if (($model instanceof website_persistentdocument_pagemodel) || ($model instanceof website_persistentdocument_pageexternalmodel))
-			{
-				$result[] = $model;
-			}
-			else
-			{				
-				$service = $model->getDocumentService();
+				if (isset($excludedModels[$modelName]))
+				{
+					continue;
+				}
+				$service = f_persistentdocument_DocumentService::getInstanceByDocumentModelName($modelName);
 				if (f_util_ClassUtils::methodExists($service, "hasIdsForSitemap"))
 				{
 					if ($service->hasIdsForSitemap())
 					{
-						$result[] = $model;
+						$result[] = $modelName;
 					}
-				}
-				else 
-				{
-					$tagName = $this->buildFunctionalTagName($model, 'detail');
-					if ($this->pageHasTag($tagName))
+					else 
 					{
-						$result[] = $model;
-					}
-					else
-					{
-						$tagName = $this->buildContextualTagName($model, 'detail');
+						$tagName = $this->buildFunctionalTagName($modelName, 'detail');
 						if ($this->pageHasTag($tagName))
 						{
-							
-							$result[] = $model;
+							$result[] = $modelName;
+						}
+						else
+						{
+							$tagName = $this->buildContextualTagName($modelName, 'detail');
+							if ($this->pageHasTag($tagName))
+							{
+								
+								$result[] = $modelName;
+							}
 						}
 					}
 				}
@@ -304,12 +300,12 @@ class referencing_ReferencingService extends BaseService
 	
 	/**
 	 * @param website_persistentdoculent_website $website
-	 * @param f_persistentdocument_PersistentDocumentModel $model
+	 * @param String $modelName
 	 * @return array<'id' => Integer>
 	 */
-	private function buildDocumentIds($website, $model, $maxUrl)
+	private function buildDocumentIds($website, $modelName, $maxUrl)
 	{
-		$documentService = $model->getDocumentService();
+		$documentService = f_persistentdocument_DocumentService::getInstanceByDocumentModelName($modelName);
 		if (f_util_ClassUtils::methodExists($documentService, 'getIdsForSitemap'))
 		{
 			$resultArray = $documentService->getIdsForSitemap($website, $maxUrl);		
@@ -317,61 +313,48 @@ class referencing_ReferencingService extends BaseService
 		else
 		{
 			$resultArray = array();
-			$query = $model->getDocumentService()->createQuery()
-				->add(Restrictions::published())->add(Restrictions::eq('model', $model->getName()))
+			$query = $documentService->createQuery()
+				->add(Restrictions::published())->add(Restrictions::eq('model', $modelName))
 				->setProjection(Projections::property('id'));
 
 			if ($maxUrl > 0)
 			{
 				$query->setMaxResults($maxUrl);
 			}
-			
-			if (($model instanceof website_persistentdocument_pagemodel) || ($model instanceof website_persistentdocument_pageexternalmodel))
+			$tagName = $this->buildContextualTagName($modelName, 'detail');
+			if ($this->pageHasTag($tagName, $website))
+			{
+					$resultArray = $query->findColumn('id');
+			}
+			else 
 			{
 				$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->findColumn('id');
 			}
-			else
-			{
-				$tagName = $this->buildFunctionalTagName($model, 'detail');
-				if ($this->pageHasTag($tagName, $website))
-				{
-					$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->findColumn('id');
-				}
-				else
-				{
-					$tagName = $this->buildContextualTagName($model, 'detail');
-					if ($this->pageHasTag($tagName, $website))
-					{
-						$resultArray = $query->findColumn('id');
-					}
-				}
-			}
 		}
-		
 		return $resultArray;
 	}
 	
 	/**
 	 * @param website_persistentdoculent_website $website
 	 * @param String $forLang
-	 * @param f_persistentdocument_PersistentDocumentModel $model
+	 * @param String $modelName
 	 * @param Array<referencing_UrlInfo> $urlInfoArray
 	 * @param Boolean $includeExcludedUrl
 	 */
-	private function appendModelToUrlInfoArray($website, $forLang, $model, &$urlInfoArray, $includeExcludedUrl, $maxUrl)
+	private function appendModelToUrlInfoArray($website, $forLang, $modelName, &$urlInfoArray, $includeExcludedUrl, $maxUrl)
 	{
 		$rqc = RequestContext::getInstance();
 		$langs = ($forLang == 'all') ? $website->getI18nInfo()->getLangs() : array($forLang);
 
-		$modelPriority = $this->getSitemapOption($website, $forLang, $model->getName(), self::SITEMAP_PRIORITY);
-		$modelChangefreq = $this->getSitemapOption($website, $forLang, $model->getName(), self::SITEMAP_CHANGEFREQ);
+		$modelPriority = $this->getSitemapOption($website, $forLang, $modelName, self::SITEMAP_PRIORITY);
+		$modelChangefreq = $this->getSitemapOption($website, $forLang, $modelName, self::SITEMAP_CHANGEFREQ);
 		foreach ($langs as $lang)
 		{
 			try 
 			{
 				$rqc->beginI18nWork($lang);
 				
-				$resultArray = $this->buildDocumentIds($website, $model, $maxUrl);
+				$resultArray = $this->buildDocumentIds($website, $modelName, $maxUrl);
 				foreach ($resultArray as $result)
 				{
 					$doc = DocumentHelper::getDocumentInstance($result);
@@ -483,10 +466,8 @@ class referencing_ReferencingService extends BaseService
 			try 
 			{
 				$rqc->beginI18nWork($lang);
-		
 				$docIds = $this->getDocumentIdsForWebsite($website);
 				$docIdCount = count($docIds);
-				
 				for ($i = 0; $i < $docIdCount; $i += self::MAX_URL_PER_FILE)
 				{
 					$tmpFile = f_util_FileUtils::getTmpFile('smurl' . $siteMapIndex . '_');
@@ -497,13 +478,9 @@ class referencing_ReferencingService extends BaseService
 					foreach ($chunks as $chunk)
 					{
 						Framework::info("processing chunk " . $index ++ . " out of " . $nChunks . " for " . $tmpFile);
-						$batch = f_util_FileUtils::buildWebeditPath('modules', 'referencing', 'bin', 'generateSitemap.php');
-						$processHandle = popen("php $batch " . WEBEDIT_HOME . " " . $lang . " " . $website->getId() . " " . $tmpFile . " " . implode(" ", $chunk), "r");
-						while (($string = fread($processHandle, 1000)) != false)
-						{
-							Framework::info($string);
-						}
-						pclose($processHandle);
+						$batch = f_util_FileUtils::buildRelativePath('modules', 'referencing', 'bin', 'generateSitemap.php');
+						$result = f_util_System::execHTTPScript($batch, array_merge(array($lang, $website->getId(), $tmpFile), $chunk));
+						Framework::info($result);
 					}
 					file_put_contents($tmpFile, "\n</urlset>", FILE_APPEND);
 					
@@ -658,23 +635,25 @@ class referencing_ReferencingService extends BaseService
 	}
 	
 	/**
-	 * @param f_persistentdocument_PersistentDocumentModel $model
+	 * @param String $modelName
 	 * @param String $type May be 'list' or 'detail'.
 	 * @return String
 	 */
-	private function buildFunctionalTagName($model, $type)
+	private function buildFunctionalTagName($modelName, $type)
 	{
-		return 'functional_' . $model->getOriginalModuleName() . '_' . $model->getOriginalDocumentName() . '-' . $type;
+		list($module, $name) = explode('/', $modelName);
+		return str_replace('modules_', 'functional_', $module) . '_' . $name . '-' . $type;
 	}
 	
 	/**
-	 * @param f_persistentdocument_PersistentDocumentModel $model
+	 * @param String $modelName
 	 * @param String $type May be 'list' or 'detail'.
 	 * @return String
 	 */
-	private function buildContextualTagName($model, $type)
+	private function buildContextualTagName($modelName, $type)
 	{
-		return 'contextual_website_website_modules_' . $model->getOriginalModuleName() . '_page-' . $type;
+		list($module, ) = explode('/', $modelName);
+		return 'contextual_website_website_modules_' . str_replace('modules_', '', $module) . '_page-' . $type;
 	}
 	
 	private $sitemapOptionsPerWebsiteAndLang;
@@ -866,7 +845,6 @@ class referencing_ReferencingService extends BaseService
 			{
 				Controller::newInstance("controller_ChangeController");
 			}
-			
 			$this->generateAllSitemapFiles();
 		}
 	}
