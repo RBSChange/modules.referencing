@@ -7,11 +7,11 @@ class referencing_LoadModelListAction extends f_action_BaseAction
 	 */
 	public function _execute($context, $request)
 	{
-		$models = referencing_ReferencingService::getInstance()->getPersistentModels();
-		foreach ($models as $model)
+		$modelNames = referencing_ReferencingService::getInstance()->getPersistentModels();
+		foreach ($modelNames as $modelName)
 		{
-			$modelLabel = f_Locale::translate('&modules.'.$model->getModuleName().'.document.'.$model->getDocumentName().'.Document-name;');
-			$contents[] = '<model name="'.$model->getName().'"><![CDATA[' . $modelLabel . ']]></model>'; 
+			$modelLabel = f_Locale::translate('&'. str_replace(array('_', '/'), array('.', '.document.'), $modelName) . '.Document-name;');
+			$contents[] = '<model name="'.$modelName.'"><![CDATA[' . $modelLabel . ']]></model>'; 
 		}
 		$request->setAttribute('contents', join("\n", $contents));
 		return self::getSuccessView();

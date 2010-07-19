@@ -82,6 +82,7 @@ class referencing_ReferencingService extends BaseService
 	//                                                                       //
 	///////////////////////////////////////////////////////////////////////////
 	
+
 	/**
 	 * @param website_persistentdocument_website $website
 	 * @param String $forLang
@@ -141,8 +142,7 @@ class referencing_ReferencingService extends BaseService
 		$wis = referencing_WebsiteinfoService::getInstance();
 		$forLang = $website->getLocalizebypath() ? 'all' : $forLang;
 		
-		$doc = $wis->createQuery()->add(Restrictions::eq('website', $website))
-			->add(Restrictions::eq('forLang', $forLang))->findUnique();
+		$doc = $wis->createQuery()->add(Restrictions::eq('website', $website))->add(Restrictions::eq('forLang', $forLang))->findUnique();
 		if ($createIfNeeded && $doc === null)
 		{
 			$doc = $wis->getNewDocumentInstance();
@@ -174,7 +174,7 @@ class referencing_ReferencingService extends BaseService
 		$models = $this->getPersistentModels();
 		foreach ($models as $modelName)
 		{
-			$result = array_merge($result, $this->buildDocumentIds($website, $modelName, -1));
+			$result = array_merge($result, $this->buildDocumentIds($website, $modelName, - 1));
 		}
 		return $result;
 	}
@@ -199,7 +199,7 @@ class referencing_ReferencingService extends BaseService
 		{
 			$modelNames = array($modelName);
 		}
-		$urlInfoArray = array();		
+		$urlInfoArray = array();
 		foreach ($modelNames as $modelName)
 		{
 			$this->appendModelToUrlInfoArray($website, $forLang, $modelName, $urlInfoArray, $includeExcludedUrl, $maxUrls);
@@ -213,7 +213,7 @@ class referencing_ReferencingService extends BaseService
 	public function getPersistentModels()
 	{
 		$result = array();
-		$modelsByModule =  f_persistentdocument_PersistentDocumentModel::getDocumentModelNamesByModules();
+		$modelsByModule = f_persistentdocument_PersistentDocumentModel::getDocumentModelNamesByModules();
 		$excludedModels = $this->getExludedModels();
 		foreach ($modelsByModule as $models)
 		{
@@ -230,24 +230,25 @@ class referencing_ReferencingService extends BaseService
 					{
 						$result[] = $modelName;
 					}
-					else 
+				}
+				else
+				{
+					$tagName = $this->buildFunctionalTagName($modelName, 'detail');
+					if ($this->pageHasTag($tagName))
 					{
-						$tagName = $this->buildFunctionalTagName($modelName, 'detail');
+						$result[] = $modelName;
+					}
+					else
+					{
+						$tagName = $this->buildContextualTagName($modelName, 'detail');
 						if ($this->pageHasTag($tagName))
 						{
+							
 							$result[] = $modelName;
-						}
-						else
-						{
-							$tagName = $this->buildContextualTagName($modelName, 'detail');
-							if ($this->pageHasTag($tagName))
-							{
-								
-								$result[] = $modelName;
-							}
 						}
 					}
 				}
+			
 			}
 		}
 		return $result;
@@ -308,15 +309,13 @@ class referencing_ReferencingService extends BaseService
 		$documentService = f_persistentdocument_DocumentService::getInstanceByDocumentModelName($modelName);
 		if (f_util_ClassUtils::methodExists($documentService, 'getIdsForSitemap'))
 		{
-			$resultArray = $documentService->getIdsForSitemap($website, $maxUrl);		
+			$resultArray = $documentService->getIdsForSitemap($website, $maxUrl);
 		}
 		else
 		{
 			$resultArray = array();
-			$query = $documentService->createQuery()
-				->add(Restrictions::published())->add(Restrictions::eq('model', $modelName))
-				->setProjection(Projections::property('id'));
-
+			$query = $documentService->createQuery()->add(Restrictions::published())->add(Restrictions::eq('model', $modelName))->setProjection(Projections::property('id'));
+			
 			if ($maxUrl > 0)
 			{
 				$query->setMaxResults($maxUrl);
@@ -324,9 +323,9 @@ class referencing_ReferencingService extends BaseService
 			$tagName = $this->buildContextualTagName($modelName, 'detail');
 			if ($this->pageHasTag($tagName, $website))
 			{
-					$resultArray = $query->findColumn('id');
+				$resultArray = $query->findColumn('id');
 			}
-			else 
+			else
 			{
 				$resultArray = $query->add(Restrictions::descendentOf($website->getId()))->findColumn('id');
 			}
@@ -345,12 +344,12 @@ class referencing_ReferencingService extends BaseService
 	{
 		$rqc = RequestContext::getInstance();
 		$langs = ($forLang == 'all') ? $website->getI18nInfo()->getLangs() : array($forLang);
-
+		
 		$modelPriority = $this->getSitemapOption($website, $forLang, $modelName, self::SITEMAP_PRIORITY);
 		$modelChangefreq = $this->getSitemapOption($website, $forLang, $modelName, self::SITEMAP_CHANGEFREQ);
 		foreach ($langs as $lang)
 		{
-			try 
+			try
 			{
 				$rqc->beginI18nWork($lang);
 				
@@ -366,7 +365,7 @@ class referencing_ReferencingService extends BaseService
 					{
 						$url = LinkHelper::getDocumentUrl($doc, $lang);
 						$isUrlExcluded = $this->isUrlExcludedInWebsite($url, $website, $forLang);
-						if (!$isUrlExcluded || $includeExcludedUrl)
+						if (! $isUrlExcluded || $includeExcludedUrl)
 						{
 							$urlInfo = new referencing_UrlInfo();
 							$urlInfo->loc = $url;
@@ -381,7 +380,7 @@ class referencing_ReferencingService extends BaseService
 					}
 					$doc = null;
 				}
-			
+				
 				$rqc->endI18nWork();
 			}
 			catch (Exception $e)
@@ -463,12 +462,12 @@ class referencing_ReferencingService extends BaseService
 		$langs = ($forLang == 'all') ? $website->getI18nInfo()->getLangs() : array($forLang);
 		foreach ($langs as $lang)
 		{
-			try 
+			try
 			{
 				$rqc->beginI18nWork($lang);
 				$docIds = $this->getDocumentIdsForWebsite($website);
 				$docIdCount = count($docIds);
-				for ($i = 0; $i < $docIdCount; $i += self::MAX_URL_PER_FILE)
+				for($i = 0; $i < $docIdCount; $i += self::MAX_URL_PER_FILE)
 				{
 					$tmpFile = f_util_FileUtils::getTmpFile('smurl' . $siteMapIndex . '_');
 					file_put_contents($tmpFile, '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n");
@@ -488,9 +487,9 @@ class referencing_ReferencingService extends BaseService
 					unlink($tmpFile);
 					
 					$siteMaps[] = array('url' => $this->getSitemapUrl($website, $forLang, $siteMapIndex), 'lastMod' => date('c', time()));
-					$siteMapIndex++;
+					$siteMapIndex ++;
 				}
-		
+				
 				$rqc->endI18nWork();
 			}
 			catch (Exception $e)
@@ -609,7 +608,10 @@ class referencing_ReferencingService extends BaseService
 	public function getSitemapContents($website, $forLang, $siteMapIndex = 0)
 	{
 		$path = $this->getSitemapPathForWebsite($website, $forLang, $siteMapIndex);
-		if (Framework::isInfoEnabled()) { Framework::info(__METHOD__ . "($path)"); }
+		if (Framework::isInfoEnabled())
+		{
+			Framework::info(__METHOD__ . "($path)");
+		}
 		if (file_exists($path))
 		{
 			return f_util_FileUtils::read($path);
@@ -626,7 +628,10 @@ class referencing_ReferencingService extends BaseService
 	public function getSitemapIndexContents($website, $forLang, $siteMapIndex = 0)
 	{
 		$path = $this->getSitemapIndexPathForWebsite($website, $forLang, $siteMapIndex);
-		if (Framework::isInfoEnabled()) { Framework::info(__METHOD__ . "($path)"); }
+		if (Framework::isInfoEnabled())
+		{
+			Framework::info(__METHOD__ . "($path)");
+		}
 		if (file_exists($path))
 		{
 			return f_util_FileUtils::read($path);
@@ -641,7 +646,7 @@ class referencing_ReferencingService extends BaseService
 	 */
 	private function buildFunctionalTagName($modelName, $type)
 	{
-		list($module, $name) = explode('/', $modelName);
+		list ($module, $name) = explode('/', $modelName);
 		return str_replace('modules_', 'functional_', $module) . '_' . $name . '-' . $type;
 	}
 	
@@ -652,7 +657,7 @@ class referencing_ReferencingService extends BaseService
 	 */
 	private function buildContextualTagName($modelName, $type)
 	{
-		list($module, ) = explode('/', $modelName);
+		list ($module, ) = explode('/', $modelName);
 		return 'contextual_website_website_modules_' . str_replace('modules_', '', $module) . '_page-' . $type;
 	}
 	
@@ -668,15 +673,15 @@ class referencing_ReferencingService extends BaseService
 	public function getSitemapOption($website, $forLang, $modelName, $optionName)
 	{
 		$websiteId = $website->getId();
-		if (!isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang]))
+		if (! isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId . '/' . $forLang]))
 		{
 			$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang);
 			if ($infoDoc !== null && is_string($infoDoc->getSitemapOptions()))
 			{
-				$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapOptions());
+				$this->sitemapOptionsPerWebsiteAndLang[$websiteId . '/' . $forLang] = unserialize($infoDoc->getSitemapOptions());
 			}
 		}
-		$sitemapOptions = &$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang];
+		$sitemapOptions = &$this->sitemapOptionsPerWebsiteAndLang[$websiteId . '/' . $forLang];
 		
 		if (is_array($sitemapOptions) && isset($sitemapOptions[$modelName]) && isset($sitemapOptions[$modelName][$optionName]))
 		{
@@ -697,20 +702,20 @@ class referencing_ReferencingService extends BaseService
 	{
 		$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang, true);
 		$websiteId = $website->getId();
-		if (!isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang]))
+		if (! isset($this->sitemapOptionsPerWebsiteAndLang[$websiteId . '/' . $forLang]))
 		{
 			if ($infoDoc !== null)
 			{
-				$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapOptions());
+				$this->sitemapOptionsPerWebsiteAndLang[$websiteId . '/' . $forLang] = unserialize($infoDoc->getSitemapOptions());
 			}
 		}
-		$sitemapOptions = &$this->sitemapOptionsPerWebsiteAndLang[$websiteId.'/'.$forLang];
+		$sitemapOptions = &$this->sitemapOptionsPerWebsiteAndLang[$websiteId . '/' . $forLang];
 		
-		if (!is_array($sitemapOptions))
+		if (! is_array($sitemapOptions))
 		{
 			$sitemapOptions = array();
 		}
-		if (!isset($sitemapOptions[$modelName]))
+		if (! isset($sitemapOptions[$modelName]))
 		{
 			$sitemapOptions[$modelName] = array();
 		}
@@ -737,15 +742,15 @@ class referencing_ReferencingService extends BaseService
 	public function getSitemapOptionForUrl($website, $forLang, $url, $optionName)
 	{
 		$websiteId = $website->getId();
-		if (! isset($this->sitemapUrlInfoPerWebsite[$websiteId.'/'.$forLang]))
+		if (! isset($this->sitemapUrlInfoPerWebsite[$websiteId . '/' . $forLang]))
 		{
 			$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang);
 			if (! is_null($infoDoc))
 			{
-				$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapUrlInfo());
+				$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId . '/' . $forLang] = unserialize($infoDoc->getSitemapUrlInfo());
 			}
 		}
-		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang];
+		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId . '/' . $forLang];
 		
 		if (is_array($sitemapUrlInfo) && isset($sitemapUrlInfo[$url]) && isset($sitemapUrlInfo[$url][$optionName]))
 		{
@@ -766,14 +771,14 @@ class referencing_ReferencingService extends BaseService
 	{
 		$infoDoc = $this->getInfoDocumentForWebsiteAndLang($website, $forLang, true);
 		$websiteId = $website->getId();
-		if (! isset($this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang]))
+		if (! isset($this->sitemapUrlInfoPerWebsiteAndLang[$websiteId . '/' . $forLang]))
 		{
 			if (! is_null($infoDoc))
 			{
-				$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang] = unserialize($infoDoc->getSitemapUrlInfo());
+				$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId . '/' . $forLang] = unserialize($infoDoc->getSitemapUrlInfo());
 			}
 		}
-		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId.'/'.$forLang];
+		$sitemapUrlInfo = &$this->sitemapUrlInfoPerWebsiteAndLang[$websiteId . '/' . $forLang];
 		
 		if (! is_array($sitemapUrlInfo))
 		{
@@ -837,10 +842,10 @@ class referencing_ReferencingService extends BaseService
 		
 		if ($generate)
 		{
-			try 
+			try
 			{
 				Controller::getInstance();
-			} 
+			}
 			catch (ControllerException $e)
 			{
 				Controller::newInstance("controller_ChangeController");
@@ -861,7 +866,7 @@ class referencing_ReferencingService extends BaseService
 			foreach ($langs as $lang)
 			{
 				$this->saveSitemapContents($website, $lang);
-			}	
+			}
 		}
 	}
 }
