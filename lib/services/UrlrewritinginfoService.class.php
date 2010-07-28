@@ -124,7 +124,8 @@ class referencing_UrlrewritinginfoService extends f_persistentdocument_DocumentS
 			{
 				Framework::debug(__METHOD__ . ' clear all simple cache.');
 			}
-			f_SimpleCache::clear();			
+			//f_SimpleCache::clear();
+			f_DataCacheService::getInstance()->clearAll();			
 		}
 		// For models and tags we can clear only caches that depends on them. 
 		else 
@@ -136,7 +137,8 @@ class referencing_UrlrewritinginfoService extends f_persistentdocument_DocumentS
 					Framework::debug(__METHOD__ . ' clear simple cache by model: '.$package.'/'.$modelName);
 				}
 				$model = f_persistentdocument_PersistentDocumentModel::getInstanceFromDocumentModelName($package.'/'.$modelName);
-				f_SimpleCache::clearCacheByModel($model);
+				//f_SimpleCache::clearCacheByModel($model);
+				f_DataCacheService::getInstance()->clearCacheByModel($model);
 			}
 			foreach ($differences['tags'] as $tag)
 			{
@@ -144,7 +146,8 @@ class referencing_UrlrewritinginfoService extends f_persistentdocument_DocumentS
 				{
 					Framework::debug(__METHOD__ . ' clear simple cache by tag: '.$tag);
 				}
-				f_SimpleCache::clearCacheByTag($tag);
+				//f_SimpleCache::clearCacheByTag($tag);
+				f_DataCacheService::getInstance()->clearCacheByTag($tag);
 			}
 		}
 	}
