@@ -1,5 +1,5 @@
 <?php
-class referencing_SaveExcludedUrlListAction extends f_action_BaseAction
+class referencing_SaveExcludedUrlListAction extends f_action_BaseJSONAction
 {
 	/**
 	 * @param Context $context
@@ -12,7 +12,7 @@ class referencing_SaveExcludedUrlListAction extends f_action_BaseAction
 			$request->getParameter('forLang'),
 			$request->getParameter('contents')
 		);
-		return self::getSuccessView();
+		return $this->sendJSON(array('SUCCES' => __METHOD__));
 	}
 
 	/**

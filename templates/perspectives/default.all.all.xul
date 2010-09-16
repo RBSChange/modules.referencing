@@ -199,10 +199,4 @@
 			</vbox>				
 		</deck>		
 	</vbox>
-	
-	<splitter collapse="after">
-		<wsplitterbutton />
-	</splitter>
-	
-	<wmultitree width="210" id="rscTree" candrag="true" hideheader="true" i18n:attributes="title &amp;modules.generic.backoffice.ResourcesTree;" />
 </hbox>
