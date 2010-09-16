@@ -318,17 +318,27 @@
 	</action>
 	<action name="saveExcludedUrlList">
 		<body><![CDATA[
-			this.execute("&amp;modules.referencing.bo.actions.SaveExcludedUrlList;", "SaveExcludedUrlList", { contents: this.getElementById('excludedUrlListContents').value, websiteId: this.currentSitemapWebsiteId, forLang: this.currentSitemapWebsiteLang });
+			var me = this;
+			var parameters = { contents: this.getElementById('excludedUrlListContents').value, websiteId: this.currentSitemapWebsiteId, forLang: this.currentSitemapWebsiteLang };
+			wCore.executeJSON('referencing', 'SaveExcludedUrlList', parameters, function(result) {me.onSaveExcludedUrlList(result)}, true); 
 		]]></body>
 	</action>
-	<action name="onSaveExcludedUrlListSuccess">
-		<parameter name="e4x" />
+	<action name="onSaveExcludedUrlList">
+		<parameter name="result" />
 		<body><![CDATA[
-			this.getElementById('btnSaveExcludedUrlList').disabled = true;
-			var field = this.getElementById('excludedUrlListContents');
-			this.excludedUrlListInitialValue = field.value;
-			field.focus();
-			this.loadUrlList(true);
+			if (result.status == 'OK')
+			{
+				wCore.debug('onSaveExcludedUrlList OK');
+				this.getElementById('btnSaveExcludedUrlList').disabled = true;
+				var field = this.getElementById('excludedUrlListContents');
+				this.excludedUrlListInitialValue = field.value;
+				field.focus();
+				this.loadUrlList(true);
+			}
+			else
+			{
+				wCore.debug('onSaveExcludedUrlList ERROR');
+			}
 		]]></body>
 	</action>
 	<action name="loadExcludedUrlList">
@@ -722,38 +732,6 @@
 	    ]]></body>
 	</action>
 
-	<!-- Permissions -->
-	<!--
-		Specific version without document selection in any list or tree.
-		Automatically apply on referencing root folder.
-    -->
-	<action name="editModulePermissions" label="&amp;modules.uixul.bo.actions.Edit-permissions;" icon="rights-management" global="true">
-		<body><![CDATA[
-			this.appendToTitle(": %label% ".toLowerCase());
-	  		this.viewLayout(5);
-			
-			// Get the root folder id.
-			var result = wCore.executeJSON('referencing', 'GetRootFolderId', {}, null, true);
-			var documentId = result['contents'].id;
-			var documentLang = this.getContextLang();
-			var form = document.getElementById('modules_referencing_widget_moduleForm');
-	
-			// detach the form from its attached component (generally a list)
-			// in order to make it independant
-			form.detach();
-	
-			// load the form for the requested document type
-			form.setAttribute('module', this.name);
-			form.setAttribute('document-type', 'permission');
-			form.setAttribute('parent-id', documentId);
-			form.setAttribute('document-lang', documentLang);
-	
-			form.loadActionName = 'LoadPermissions';
-			form.saveActionName = 'SavePermissions';
-			form.reattach(false);
-			form.callMethod('load', documentId, documentLang);
-		]]></body>
-	</action>
 	<action name="createUrlrewritinginfo" label="&amp;modules.referencing.bo.actions.Create-Urlrewritinginfo;">
 		<parameter name="listWidget" />
 		<body><![CDATA[
