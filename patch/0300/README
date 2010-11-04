@@ -1,4 +1,0 @@
-Version: 3.0.1
-
-- remove the old robotsTxt and engineIdInfo fields.
-- add the forLang property.
