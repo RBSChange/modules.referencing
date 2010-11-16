@@ -33,7 +33,7 @@ class referencing_LoadUrlRewritingInfoForPackageAction extends referencing_Actio
 	/**
 	 * @return Boolean
 	 */
-	protected function suffixSecureActionByDocument()
+	protected function isDocumentAction()
 	{
 		return false;
 	}
