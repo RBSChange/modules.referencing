@@ -311,14 +311,6 @@ class referencing_RedirectionService extends f_persistentdocument_DocumentServic
 		return join("\n", $data);
 	}
 	
-	/**
-	 * @deprecated use ApacheService::createApacheDirectory()
-	 */
-	public function createApacheDirectory()
-	{
-		ApacheService::getInstance()->createApacheDirectory();
-	}
-	
 	// protected methods
 	
 	/**
@@ -365,5 +357,15 @@ class referencing_RedirectionService extends f_persistentdocument_DocumentServic
 			return substr($url, 1);
 		}
 		return $url;
+	}
+	
+	// Deprecated
+
+	/**
+	 * @deprecated with no replacement
+	 */
+	public function createApacheDirectory()
+	{
+		// moved in ApplyWebappPolicy
 	}
 }
