@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.widgets.redirectionslist" lcid="de_DE">
+  <key id="oldurl">alte URL</key>
+  <key id="newurl">neue URL</key>
+</i18n>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.actions" lcid="de_DE">
+  <key id="create-redirection">eine Weiterleitung erstellen</key>
+  <key id="generate-redirections-file">Weiterleitungen aktivieren</key>
+  <key id="download-redirections-as-csv">Weiterleitungen exportieren</key>
+  <key id="upload-csv-file">Weiterleitungen importieren</key>
+  <key id="loadexcludedurllist">Ladevorgang der ausgeschlossenen URLliste</key>
+  <key id="loadurllist">Ladevorgang der URLliste</key>
+  <key id="generatesitemapfile">Datei sitemap.xml generieren</key>
+  <key id="loadwebsitelist">Ladevorgang der Webseitenliste</key>
+  <key id="loadredirectionlist">Ladevorgang der Weiterleitungsliste</key>
+  <key id="savesitemapoptions">Speichervorgang der Sitemapoptionen</key>
+  <key id="generatesitemapfileconfirm">Die Aktualisierung der Datei Sitemap kann entsprechend der Webseitenvolumetrie einige Zeit in Anspruch nehmen. Es ist empfohlen eine automatische und periodische Aktualisierung der Datei in den Präferenzen des Moduls Referenzierung zu wählen. Möchten Sie wirklich fortfahren?</key>
+</i18n>

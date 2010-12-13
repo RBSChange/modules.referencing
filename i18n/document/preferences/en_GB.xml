@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.preferences" lcid="en_GB">
+  <key id="edition-form-title">Referencing module settings</key>
+  <key id="sitemapautogeneration">sitemap files update</key>
+  <key id="sitemapautogeneration-help">sitemap files update frequency</key>
+  <key id="sitemapdefaultpriority">default priority</key>
+  <key id="sitemapdefaultpriority-help">default URL priority for which no specific priority has been affected</key>
+  <key id="sitemapdefaultchangefreq">default change frequency</key>
+  <key id="sitemapdefaultchangefreq-help">default URL change frequency for which no specific change frequency has been affected</key>
+</i18n>

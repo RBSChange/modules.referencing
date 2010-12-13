@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.urlrewritinginfo" lcid="de_DE">
+  <key id="document-name">Überschreibung der URL</key>
+  <key id="edition-form-title">Bearbeitung der Überschreibung der URL</key>
+  <key id="label">Name</key>
+  <key id="label-help">Name</key>
+  <key id="package">Pack</key>
+  <key id="package-help">Pack-Hilfe</key>
+  <key id="content">Regeln</key>
+  <key id="content-help">XML Definition der Überschreibungsregeln.</key>
+  <key id="commentary">Kommentar</key>
+  <key id="commentary-help">hier können Sie einen Kommentar für die Regeln einfügen. Dieser Kommentar ist nirgendwo anders als hier sichtbar.</key>
+  <key id="basefilesign">baseFileSign</key>
+  <key id="basefilesign-help">baseFileSign-help</key>
+</i18n>

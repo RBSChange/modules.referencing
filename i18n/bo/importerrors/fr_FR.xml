@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.importerrors" lcid="fr_FR">
+  <key id="unknown-error">Erreur inconnue</key>
+  <key id="code_1000">Erreur de sauvegarde le fichier n'as pas été importé</key>
+  <key id="code_1001">Fichier vide</key>
+  <key id="code_1002">Toutes les lignes du fichier sont invalide</key>
+  <key id="code_1003">Ligne vide</key>
+  <key id="code_1004">Ancienne URL absente</key>
+  <key id="code_1005">Ancienne URL invalide</key>
+  <key id="code_1006">Nouvelle URL absente</key>
+  <key id="code_1007">Nouvelle URL invalide</key>
+  <key id="code_1008">la ligne ne contient pas le bon nombre d'entrée</key>
+  <key id="code_1009">Fichier ilisible</key>
+  <key id="code_1010">URL dupliquée</key>
+  <key id="code_6">Impossible de résoudre le nom de domaine</key>
+  <key id="code_28">Impossible de joindre l'URL dans le temps imparti</key>
+  <key id="code_100">Protocol HTTP non respécté</key>
+  <key id="code_301">Redirection permanente</key>
+  <key id="code_302">Redirection temporaire</key>
+  <key id="code_404">Page introuvable</key>
+  <key id="code_500">Erreur serveur</key>
+</i18n>

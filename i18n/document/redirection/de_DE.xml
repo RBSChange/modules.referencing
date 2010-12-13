@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.redirection" lcid="de_DE">
+  <key id="document-name">Weiterleitung</key>
+  <key id="edition-form-title">Eigenschaften der Weiterleitung</key>
+  <key id="label">Name</key>
+  <key id="label-help">Name</key>
+  <key id="oldurl">alte URL</key>
+  <key id="oldurl-help">weiterzuleitende alte URL: entsprechende Adresse der Art /Beispiel.html</key>
+  <key id="newurl">neue URL</key>
+  <key id="newurl-help">Neue ZielURL: absolute Adresse mit http://</key>
+</i18n>

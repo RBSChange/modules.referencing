@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.preferences" lcid="de_DE">
+  <key id="document-name">Präferenzen</key>
+  <key id="edition-form-title">Präferenzen des Moduls Referenzierung</key>
+  <key id="sitemapautogeneration">Aktualisierung der Sitemap Dateien</key>
+  <key id="sitemapautogeneration-help">automatische Aktualisierungsfrequenz der Sitemap Dateien</key>
+  <key id="sitemapdefaultpriority">Standardpriorität</key>
+  <key id="sitemapdefaultpriority-help">Standardpriorität der URLs für die keine spezifische Priorität definiert wurde.</key>
+  <key id="sitemapdefaultchangefreq">Standard Änderungsfrequenz</key>
+  <key id="sitemapdefaultchangefreq-help">Standard Änderungsfrequenz der URLs für die keine spezifische Priorität definiert wurde.</key>
+</i18n>

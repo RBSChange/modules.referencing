@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.urlrewritinginfo" lcid="fr_FR">
+  <key id="document-name">ré-écriture d'URL</key>
+  <key id="edition-form-title">édition de la ré-écriture d'URL</key>
+  <key id="label">libellé</key>
+  <key id="label-help">libellé</key>
+  <key id="package">package</key>
+  <key id="package-help">package-help</key>
+  <key id="content">règles</key>
+  <key id="content-help">définition XML des règles de ré-écriture.</key>
+  <key id="commentary">commentaire</key>
+  <key id="commentary-help">ici vous pouvez saisir ici un commentaire sur les règles. Ce commentaire ne sera visible nul part ailleurs qu'ici.</key>
+  <key id="basefilesign">baseFileSign</key>
+  <key id="basefilesign-help">baseFileSign-help</key>
+</i18n>

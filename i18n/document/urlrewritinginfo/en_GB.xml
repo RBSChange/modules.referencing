@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.urlrewritinginfo" lcid="en_GB">
+  <key id="edition-form-title">URL rewriting edition</key>
+  <key id="label">label</key>
+  <key id="label-help">label</key>
+  <key id="package">package</key>
+  <key id="package-help">package-help</key>
+  <key id="content">rules</key>
+  <key id="content-help">XML definition of the URL rewriting rules.</key>
+  <key id="commentary">commentary</key>
+  <key id="commentary-help">here you can set a commentary for the rules. This commentary will only be visible here.</key>
+  <key id="basefilesign">baseFileSign</key>
+  <key id="basefilesign-help">baseFileSign-help</key>
+</i18n>

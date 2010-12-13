@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.importerrors" lcid="de_DE">
+  <key id="unknown-error">Unbekannter Fehler</key>
+  <key id="code_1000">Speicherfehler die Datei wurde nicht importiert</key>
+  <key id="code_1001">Leere Datei</key>
+  <key id="code_1002">Alle Zeilen der Datei sind ungültig</key>
+  <key id="code_1003">Leere Zeile</key>
+  <key id="code_1004">Alte URL nicht vorhanden</key>
+  <key id="code_1005">Alte URL ungültig</key>
+  <key id="code_1006">Neue URL nicht vorhanden</key>
+  <key id="code_1007">Neue URL ungültig</key>
+  <key id="code_1008">die Zeile enthält nicht die richtige Anzahl von Einträgen</key>
+  <key id="code_1009">Unlesbare Datei</key>
+  <key id="code_1010">Duplizierte URL</key>
+  <key id="code_6">Unmöglich Domainname zu lösen</key>
+  <key id="code_28">Unmöglich URL in der gegebenen Zeit zu erreichen</key>
+  <key id="code_100">HTTP Protokoll nicht respektiert</key>
+  <key id="code_301">Permanente Weiterleitung</key>
+  <key id="code_302">Vorrübergehende Weiterleitung</key>
+  <key id="code_404">Seite nicht gefunden</key>
+  <key id="code_500">Server Fehler</key>
+</i18n>

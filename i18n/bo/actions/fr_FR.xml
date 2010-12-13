@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.actions" lcid="fr_FR">
+  <key id="create-redirection">créer une redirection</key>
+  <key id="generate-redirections-file">Activer les redirections</key>
+  <key id="download-redirections-as-csv">exporter les redirections</key>
+  <key id="upload-csv-file">importer des redirections</key>
+  <key id="loadexcludedurllist">chargement de la liste des URLs exclues</key>
+  <key id="loadurllist">chargement de la liste des URLs</key>
+  <key id="generatesitemapfile">générer le fichier sitemap.xml</key>
+  <key id="loadwebsitelist">chargement de la liste des sites web</key>
+  <key id="loadredirectionlist">chargement de la liste des redirections</key>
+  <key id="savesitemapoptions">enregistrement des options pour le sitemap</key>
+  <key id="generatesitemapfileconfirm">La mise à jour du fichier Sitemap peut prendre du temps en fonction de la volumétrie du site. Il est recommandé d'opter pour une mise à jour automatique et périodique du fichier, dans les préférences du module Référencement. Souhaitez-vous réellement continuer ?</key>
+</i18n>

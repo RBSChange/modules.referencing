@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.useractionlogger" lcid="fr_FR">
+  <key id="update-urlrewritinginfo">update.urlrewritinginfo {documentlabel}</key>
+  <key id="log-update-urlrewritinginfo">log-update-urlrewritinginfo</key>
+</i18n>

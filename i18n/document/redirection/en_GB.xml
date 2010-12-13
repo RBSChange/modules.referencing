@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.document.redirection" lcid="en_GB">
+  <key id="document-name">redirection</key>
+  <key id="edition-form-title">redirection properties</key>
+  <key id="label">label</key>
+  <key id="label-help">label</key>
+  <key id="oldurl">old URL</key>
+  <key id="newurl">new URL</key>
+</i18n>

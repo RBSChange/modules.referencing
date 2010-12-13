@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<i18n baseKey="m.referencing.bo.actions" lcid="en_GB">
+  <key id="create-redirection">create redirection</key>
+  <key id="generate-redirections-file">Activate redirections</key>
+  <key id="download-redirections-as-csv">export redirections</key>
+  <key id="upload-csv-file">import redirections</key>
+  <key id="loadexcludedurllist">load excluded URLs list</key>
+  <key id="loadurllist">load URLs list</key>
+  <key id="generatesitemapfile">generate sitemap.xml file</key>
+  <key id="loadwebsitelist">loading websites list</key>
+  <key id="loadredirectionlist">loading redirections list</key>
+  <key id="savesitemapoptions">saving sitemap options</key>
+  <key id="generatesitemapfileconfirm">The Sitemap file update may take a while, depending on the website's contents. It is recommended to choose an automated and periodic update. Do you really want to continue?</key>
+</i18n>
