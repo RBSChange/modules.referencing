@@ -2,4 +2,5 @@
 <script>
   <binding fileName="modules/useractionlogger/persistentdocument/import/useractionlogger_binding.xml"/>
   <actiondef modulename="referencing" actionname="update.urlrewritinginfo" label="modules.referencing.bo.useractionlogger.update-urlrewritinginfo"/>
+  <actiondef modulename="referencing" actionname="insert.redirection" label="m.referencing.bo.useractionlogger.insert-redirection"/>
 </script>

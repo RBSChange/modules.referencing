@@ -2,4 +2,6 @@
 <i18n baseKey="m.referencing.bo.useractionlogger" lcid="fr_FR">
   <key id="update-urlrewritinginfo">update.urlrewritinginfo {documentlabel}</key>
   <key id="log-update-urlrewritinginfo">log-update-urlrewritinginfo</key>
+  <key id="insert-redirection">insert.redirection {documentlabel}</key>
+  <key id="log-insert-redirection">log insert redirection</key>
 </i18n>
