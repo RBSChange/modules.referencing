@@ -1,7 +1,7 @@
 function onInit() 
 {
-	jQuery(this.getElementById('package-row')).hide();
-	jQuery(this.getElementById('baseFileSignature-row')).hide();
+	this.getElementById('package-row').setAttribute('collapsed', 'true');
+	this.getElementById('baseFileSignature-row').setAttribute('collapsed', 'true');
 	this.toolbar.hideCreateButton();
 }
 
