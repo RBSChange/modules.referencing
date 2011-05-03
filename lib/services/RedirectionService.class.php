@@ -278,10 +278,33 @@ class referencing_RedirectionService extends f_persistentdocument_DocumentServic
 			$data[] = 'RewriteEngine On';
 		}
 		$website = null;
+		$rqc = RequestContext::getInstance();
 		foreach ($this->createQuery()->addOrder(Order::asc('website'))->find() as $redirection)
 		{
 			$website = $redirection->getWebsite();
-			$data[] = 'RewriteCond %{SERVER_NAME} ^(www\.)?' . $this->fixForRegExp($website->getDomain()).'$ [NC]';
+			$domains = array();
+			if (!$website->getLocalizebypath())
+			{
+				foreach ($website->getI18nInfo()->getLangs() as $lang)
+				{
+					try 
+					{
+						$rqc->beginI18nWork($lang);
+						$domains[] = $this->fixForRegExp($website->getDomain());
+						$rqc->endI18nWork();
+					}
+					catch (Exception $e)
+					{
+						$rqc->endI18nWork();
+						throw $e;
+					}
+				}
+			}
+			else
+			{
+				$domains[] = $this->fixForRegExp($website->getVoDomain());
+			}
+			$data[] = 'RewriteCond %{SERVER_NAME} ^(www\.)?(' . join("|", $domains).')$ [NC]';
 			$oldUrl = $this->removeStartingSlash($redirection->getOldUrl());
 			if ($mode == self::MODE_APACHE_CONF)
 			{

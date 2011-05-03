@@ -13,15 +13,15 @@ class referencing_LoadWebsiteListAction extends f_action_BaseJSONAction
 		$rqc = RequestContext::getInstance();
 		foreach ($websites as $website)
 		{
-			$forRedirection[] = array('id' => $website->getId(), 'domain' => $website->getDomain(), 'label' => $website->getLabel());
 			if (!$website->getLocalizebypath())
 			{
 				foreach ($website->getI18nInfo()->getLangs() as $lang)
 				{
-					try 
+					try
 					{
 						$rqc->beginI18nWork($lang);
 						$forSitemap[] = array('id' => $website->getId(), 'domain' => $website->getDomain(), 'label' => $website->getLabel(), 'lang' => $lang);
+						$forRedirection[] = array('id' => $website->getId(), 'domain' => $website->getDomain(), 'label' => $website->getLabel());
 						$rqc->endI18nWork();
 					}
 					catch (Exception $e)
@@ -31,14 +31,15 @@ class referencing_LoadWebsiteListAction extends f_action_BaseJSONAction
 					}
 				}
 			}
-			else 
+			else
 			{
 				$forSitemap[] = array('id' => $website->getId(), 'domain' => $website->getDomain(), 'label' => $website->getLabel(), 'lang' => 'all');
+				$forRedirection[] = array('id' => $website->getId(), 'domain' => $website->getDomain(), 'label' => $website->getLabel());
 			}
 		}
 		return $this->sendJSON(array('forSitemap' => $forSitemap, 'forRedirection' => $forRedirection));
 	}
-
+	
 	/**
 	 * @return Boolean
 	 */
