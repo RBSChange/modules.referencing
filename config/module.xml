@@ -2,7 +2,7 @@
 <config>
 	<module>
 		<enabled>true</enabled>
-		<visible>true</visible>
+		<visible>false</visible>
 		<icon>seo</icon>
 		<category>admin</category>
 		<usetopic>false</usetopic>
